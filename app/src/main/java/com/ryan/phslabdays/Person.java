@@ -1,0 +1,199 @@
+package com.ryan.phslabdays;
+
+import org.json.JSONObject;
+
+public class Person {
+	private final String name, phoneNumber, carrier;
+	private final Science scienceDay;
+	private final Science misc;
+	private final boolean everyDay; // Message everyday or just on lab days
+
+	public static final java.util.Calendar todayCalendar = new java.util.GregorianCalendar();
+
+	public static char letterDay = 'C';
+	public static String message = "Good Morning"; // Can also be 'hi!'
+	public static int numSchoolDaysOver = 18;
+	public static String noSchool = "Fri, Oct 3rd, No School";
+
+	public Person(final String name, final String phoneNumber,
+			final String carrier, final Science scienceDay, final Science misc,
+			final boolean everyDay) {
+		this.name = name;
+		this.phoneNumber = phoneNumber;
+		this.carrier = carrier;
+		this.scienceDay = scienceDay;
+		this.misc = misc;
+		this.everyDay = everyDay;
+	}
+	
+	/** Returns true if person should get a message */
+	public boolean shouldGetMessage() { 
+		if(everyDay) { 
+			return true;
+		}
+		
+		if(isDay(scienceDay)) { 
+			return true;
+		}
+		if(isDay(misc)) { 
+			return true;
+		}
+		return false;
+	}
+	
+	/** Returns true if it's the science's lab day */
+	private static boolean isDay(final Science theScience) { 
+		if(theScience == null) { 
+			return false;
+		}
+		
+		for(char labDay : theScience.getLabDays()) { 
+			if(labDay == letterDay) { 
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String getLetterDay() {
+		if (letterDay == 'A') {
+			return "Today is an '" + letterDay + "' day. ";
+		} else {
+			return "Today is a '" + letterDay + "' day. ";
+		}
+	}
+
+	public String getGreeting() {
+		// Good Morning Ryan! or Good Morning!
+		String text = message;
+
+		// If there is no name, return Good Morning!
+		if (name.length() <= 1) {
+			return message + "! ";
+		}
+
+		// If there is a name with space (first and last)
+		if (name.contains(" ")) {
+			// Message = Good Morning Ryan!
+			return text + " " + name.substring(0, name.indexOf(" ")) + "! ";
+		}
+		// Default
+		else {
+			return text + " " + name + "! ";
+		}
+	}
+
+	public String getMessage() {
+		final StringBuilder text = new StringBuilder("");
+
+		text.append(getLetterDay());
+
+		// Add lab day info.
+		if (scienceDay.isLabDay(letterDay)) {
+			text.append("Today is a lab day for " + scienceDay.getScienceName()
+					+ " ");
+		}
+
+		if (misc.isLabDay(letterDay)) {
+			text.append("Misc: " + misc.getScienceName());
+		}
+
+		// If it's not Monday and we don't get it everyday
+		if (todayCalendar.get(java.util.Calendar.DAY_OF_WEEK) != java.util.Calendar.MONDAY
+				&& !everyDay) {
+			return text.toString();
+		}
+
+		if (todayCalendar.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.MONDAY) {
+			text.append("Days of School Left: " + (180 - numSchoolDaysOver)
+					+ ". ");
+			text.append("Next Break: " + noSchool);
+		}
+
+		return text.toString();
+	}
+
+	public boolean getEveryday() {
+		return this.everyDay;
+	}
+
+	public org.json.JSONObject getJSON() {
+		return getJSON(this);
+	}
+
+	public static JSONObject getJSON(final Person thePerson) {
+		final JSONObject theObj = new JSONObject();
+        try {
+            theObj.put("name", thePerson.getName());
+            theObj.put("phone", thePerson.getPhoneNumber());
+            theObj.put("carrier", thePerson.getCarrier());
+            theObj.put("everyday", thePerson.getEveryday());
+            theObj.put("science", thePerson.getScience().getJSON());
+            theObj.put("misc", thePerson.getMisc().getJSON());
+        }
+        catch (Exception e) {}
+		return theObj;
+	}
+
+	public static Person getPerson(final org.json.JSONObject theObj) {
+        try {
+            final String name = theObj.getString("name");
+            final String phone = theObj.getString("phone");
+            final String carrier = theObj.getString("carrier");
+            final boolean everyday = theObj.getBoolean("everyday");
+            final Science sci = Science.getScience(theObj.getJSONObject("science"));
+            final Science misc = Science.getScience(theObj.getJSONObject("misc"));
+            return new Person(name, phone, carrier, sci, misc, everyday);
+        }
+        catch (Exception e) {
+            return null;
+        }
+	}
+
+	@Override
+	public String toString() {
+		return "Person String: " + name + ", phoneNumber=" + phoneNumber
+				+ ", carrier=" + carrier + ", scienceClasses="
+				+ scienceDay.toString() + ", misc=" + misc + ", everyDay="
+				+ everyDay + "]";
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof com.ryan.phslabdays.Person)) {
+			return false;
+		}
+
+		final com.ryan.phslabdays.Person otherP = (com.ryan.phslabdays.Person) other;
+		return this.phoneNumber.equals(otherP.getPhoneNumber());
+	}
+
+	@Override
+	public int hashCode() {
+		return (this.name + this.carrier).hashCode();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public String getCarrier() {
+		return carrier;
+	}
+
+	public Science getScience() {
+		return scienceDay;
+	}
+
+	public Science getMisc() {
+		return misc;
+	}
+
+	public boolean isEveryday() {
+		return everyDay;
+	}
+}

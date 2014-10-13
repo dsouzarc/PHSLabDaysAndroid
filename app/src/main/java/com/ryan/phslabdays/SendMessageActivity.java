@@ -59,18 +59,6 @@ public class SendMessageActivity extends Activity {
                 editor.putString("noSchool", noSchool.getText().toString());
                 editor.commit();
 
-                final SendGrid theSend = new SendGrid("dsouzarc", "Ry1996DSCS");
-                theSend.addTo("6099154930@vtext.com");
-                theSend.setFrom("dsouzarc@gmail.com");
-                theSend.setSubject("Test");
-                makeToast("Sending...");
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        theSend.setText("Hello");
-                        log(theSend.send());
-                    }
-                }).start();
             }
         });
     }

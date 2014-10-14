@@ -4,35 +4,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import com.google.gdata.client.spreadsheet.*;
-import com.google.gdata.data.spreadsheet.*;
-import com.google.gdata.util.*;
-
-import java.io.IOException;
-import java.net.*;
-import java.util.*;
-
-import android.widget.Toast;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.github.sendgrid.SendGrid;
-import java.net.URL;
-import java.util.List;
-import com.google.gdata.client.spreadsheet.ListQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.WorksheetEntry;
 
+import java.net.URL;
 
 public class SendMessageActivity extends Activity {
 
@@ -72,18 +60,15 @@ public class SendMessageActivity extends Activity {
 
                     final URL SHEET_URL = new URL(Variables.SPREADSHEET_URL);
                     final SpreadsheetEntry spreadsheet = service.getEntry(SHEET_URL, SpreadsheetEntry.class);
-                    final URL listFeedUrl = ((WorksheetEntry) spreadsheet.getWorksheets().get(0)).getListFeedUrl();
+                    final URL listFeedUrl = (spreadsheet.getWorksheets().get(0)).getListFeedUrl();
 
                     final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
-                    for(ListEntry entry : feed1.getEntries())
-                    {
+                    for(ListEntry entry : feed1.getEntries()) {
                         log("new row");
-                        for(String tag : entry.getCustomElements().getTags())
-                        {
+                        for(String tag : entry.getCustomElements().getTags()) {
                             log("     "+tag + ": " + entry.getCustomElements().getValue(tag));
                         }
                     }
-
                 }
                 catch (Exception e) {
                     log(e.toString());
@@ -132,14 +117,12 @@ public class SendMessageActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.send_message, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.sendCustomMessage:
                 break;
@@ -147,7 +130,6 @@ public class SendMessageActivity extends Activity {
                 break;
 
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

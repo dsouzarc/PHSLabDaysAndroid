@@ -18,7 +18,7 @@ import android.widget.Toast;
 public class LoginScreen extends Activity {
 
     private EditText passwordET, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
-    private TextView myName;
+    private TextView myName, save;
 
     private SharedPreferences thePrefs;
     private SharedPreferences.Editor theEditor;
@@ -34,12 +34,13 @@ public class LoginScreen extends Activity {
                 getApplicationContext().getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
         this.theEditor = this.thePrefs.edit();
 
-        this.myName = (TextView) findViewById(com.ryan.phslabdays.R.id.writtenTV);
+        this.myName = (TextView) findViewById(R.id.writtenTV);
+        this.save = (TextView) findViewById(R.id.saveView);
         this.passwordET = (EditText) findViewById(R.id.loginEditText);
-        this.sendgridUsername = (EditText) findViewById(com.ryan.phslabdays.R.id.sendgridUserName);
-        this.sendgridPassword = (EditText) findViewById(com.ryan.phslabdays.R.id.sendgridPassword);
-        this.gmailUsername = (EditText) findViewById(com.ryan.phslabdays.R.id.gmailUsername);
-        this.gmailPassword = (EditText) findViewById(com.ryan.phslabdays.R.id.gmailPassword);
+        this.sendgridUsername = (EditText) findViewById(R.id.sendgridUserName);
+        this.sendgridPassword = (EditText) findViewById(R.id.sendgridPassword);
+        this.gmailUsername = (EditText) findViewById(R.id.gmailUsername);
+        this.gmailPassword = (EditText) findViewById(R.id.gmailPassword);
 
         this.myName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +48,7 @@ public class LoginScreen extends Activity {
                 showFields = !showFields;
 
                 if(showFields) {
+                    save.setVisibility(View.VISIBLE);
                     sendgridUsername.setVisibility(View.VISIBLE);
                     sendgridPassword.setVisibility(View.VISIBLE);
                     gmailUsername.setVisibility(View.VISIBLE);
@@ -54,6 +56,7 @@ public class LoginScreen extends Activity {
                 }
 
                 else {
+                    save.setVisibility(View.INVISIBLE);
                     sendgridUsername.setVisibility(View.INVISIBLE);
                     sendgridPassword.setVisibility(View.INVISIBLE);
                     gmailUsername.setVisibility(View.INVISIBLE);

@@ -17,4 +17,7 @@ public class Variables {
     public static final String SG_PASSWORD = "sendgrid_password";
     public static final String GM_USERNAME = "gmail_username";
     public static final String GM_PASSWORD = "gmail_password";
+
+    public static final String SPREADSHEET_URL =
+            "https://spreadsheets.google.com/feeds/spreadsheets/1OpZPyzOHbBeDHrFaxZbD-5ASiZKM7-U-JNl7PUNXYw4";
 }

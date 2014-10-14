@@ -70,60 +70,11 @@ public class SendMessageActivity extends Activity {
                     log("Here");
                     service.setUserCredentials(gmailUsername, gmailPassword);
 
-                    final URL SPREADSHEET_FEED_URL = new URL(
-                            "https://spreadsheets.google.com/feeds/spreadsheets/private/full");
+                    final URL SHEET_URL = new URL(Variables.SPREADSHEET_URL);
+                    final SpreadsheetEntry spreadsheet = service.getEntry(SHEET_URL, SpreadsheetEntry.class);
+                    final URL listFeedUrl = ((WorksheetEntry) spreadsheet.getWorksheets().get(0)).getListFeedUrl();
 
-                    // Make a request to the API and get all spreadsheets.
-                    final SpreadsheetFeed feed = service.getFeed(SPREADSHEET_FEED_URL, SpreadsheetFeed.class);
-                    final List<SpreadsheetEntry> spreadsheets = feed.getEntries();
-
-                    SpreadsheetEntry theSheet = null;
-
-                    // Iterate through all of the spreadsheets returned
-                    for (SpreadsheetEntry spreadsheet : spreadsheets) {
-                        // Print the title of this spreadsheet to the screen
-                        log(spreadsheet.getTitle().getPlainText());
-
-                        if(spreadsheet.getTitle().toString().contains("PHS Lab Days")) {
-                            theSheet = spreadsheet;
-                            log("FOUND");
-                            break;
-                        }
-                    }
-
-                    if(theSheet == null) {
-                        theSheet = spreadsheets.get(3);
-                    }
-
-                    WorksheetFeed worksheetFeed = service.getFeed(theSheet.getWorksheetFeedUrl(), WorksheetFeed.class);
-                    List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
-                    WorksheetEntry worksheet = worksheets.get(0);
-
-                    URL cellFeedUrl = worksheet.getCellFeedUrl();
-                    CellFeed cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
-
-                    // Iterate through each cell, printing its value.
-                    for (CellEntry cell : cellFeed.getEntries()) {
-                        // Print the cell's address in A1 notation
-                        log(cell.getTitle().getPlainText() + "\t");
-                        // Print the cell's address in R1C1 notation
-                        log(cell.getId().substring(cell.getId().lastIndexOf('/') + 1) + "\t");
-                        // Print the cell's formula or text value
-                        log(cell.getCell().getInputValue() + "\t");
-                        // Print the cell's calculated value if the cell's value is numeric
-                        // Prints empty string if cell's value is not numeric
-                        log(cell.getCell().getNumericValue() + "\t");
-                        // Print the cell's displayed value (useful if the cell has a formula)
-                        log(cell.getCell().getValue() + "\t");
-                    }
-
-                    String t = "https://spreadsheets.google.com/feeds/spreadsheets/1OpZPyzOHbBeDHrFaxZbD-5ASiZKM7-U-JNl7PUNXYw4";
-                    URL metafeedUrl = new URL(t);
-                    SpreadsheetEntry spreadsheet = service.getEntry(metafeedUrl, SpreadsheetEntry.class);
-                    URL listFeedUrl = ((WorksheetEntry) spreadsheet.getWorksheets().get(0)).getListFeedUrl();
-
-                    // Print entries
-                    ListFeed feed1 = (ListFeed) service.getFeed(listFeedUrl, ListFeed.class);
+                    final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
                     for(ListEntry entry : feed1.getEntries())
                     {
                         log("new row");
@@ -139,9 +90,6 @@ public class SendMessageActivity extends Activity {
                 }
             }
         }).start();
-
-
-
 
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);

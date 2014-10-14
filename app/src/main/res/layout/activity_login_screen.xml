@@ -15,4 +15,52 @@
         android:hint="Enter passcode"
         android:id="@+id/loginEditText"
         android:inputType="numberPassword"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ryan D'souza"
+        android:id="@+id/writtenTV"
+        android:layout_below="@+id/loginEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="107dp"
+        android:layout_marginLeft="8dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="SendGrid Username"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/writtenTV"
+        android:id="@+id/sendgridUserName"
+        android:visibility="invisible"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="SendGrid Password"
+        android:layout_marginTop="8dp"
+        android:inputType="textPassword"
+        android:layout_below="@+id/sendgridUserName"
+        android:id="@+id/sendgridPassword"
+        android:visibility="invisible"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gmail Username"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/sendgridPassword"
+        android:id="@+id/gmailUsername"
+        android:visibility="invisible"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gmail Password"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/gmailUsername"
+        android:id="@+id/gmailPassword"
+        android:visibility="invisible"/>
 </RelativeLayout>

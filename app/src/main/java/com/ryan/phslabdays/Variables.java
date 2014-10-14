@@ -12,7 +12,4 @@ public class Variables {
 	public static final String CINGULAR = "@cingularme.com";
 	public static final String SPRINT = "@messaging.sprintpcs.com";
 	public static final String NEXTEL = "@messaging.nextel.com";
-
-    public static final String USERNAME = "dsouzarc@gmail.com";
-    public static final String PASSWORD = "Ry1996DSCS";
 }

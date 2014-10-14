@@ -15,6 +15,15 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import com.github.sendgrid.SendGrid;
+import java.net.URL;
+import java.util.List;
+import com.google.gdata.client.spreadsheet.ListQuery;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.data.spreadsheet.CustomElementCollection;
+import com.google.gdata.data.spreadsheet.ListEntry;
+import com.google.gdata.data.spreadsheet.ListFeed;
+import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
+import com.google.gdata.data.spreadsheet.WorksheetEntry;
 
 
 public class SendMessageActivity extends Activity {

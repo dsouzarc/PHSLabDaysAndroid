@@ -67,7 +67,6 @@ public class SendMessageActivity extends Activity {
                 editor.putInt("daysOver", daysOver.getValue());
                 editor.putString("noSchool", noSchool.getText().toString());
                 editor.commit();
-
             }
         });
     }

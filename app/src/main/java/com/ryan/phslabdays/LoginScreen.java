@@ -12,15 +12,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 
 public class LoginScreen extends Activity {
 
-    private EditText passwordET;
-    private TextView myName, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
+    private EditText passwordET, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
+    private TextView myName;
 
     private SharedPreferences thePrefs;
     private SharedPreferences.Editor theEditor;
+
+    private boolean showFields;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +34,33 @@ public class LoginScreen extends Activity {
                 getApplicationContext().getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
         this.theEditor = this.thePrefs.edit();
 
-
-        
+        this.myName = (TextView) findViewById(com.ryan.phslabdays.R.id.writtenTV);
         this.passwordET = (EditText) findViewById(R.id.loginEditText);
+        this.sendgridUsername = (EditText) findViewById(com.ryan.phslabdays.R.id.sendgridUserName);
+        this.sendgridPassword = (EditText) findViewById(com.ryan.phslabdays.R.id.sendgridPassword);
+        this.gmailUsername = (EditText) findViewById(com.ryan.phslabdays.R.id.gmailUsername);
+        this.gmailPassword = (EditText) findViewById(com.ryan.phslabdays.R.id.gmailPassword);
+
+        this.myName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFields = !showFields;
+
+                if(showFields) {
+                    sendgridUsername.setVisibility(View.VISIBLE);
+                    sendgridPassword.setVisibility(View.VISIBLE);
+                    gmailUsername.setVisibility(View.VISIBLE);
+                    gmailPassword.setVisibility(View.VISIBLE);
+                }
+
+                else {
+                    sendgridUsername.setVisibility(View.INVISIBLE);
+                    sendgridPassword.setVisibility(View.INVISIBLE);
+                    gmailUsername.setVisibility(View.INVISIBLE);
+                    gmailPassword.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
 
         this.passwordET.addTextChangedListener(new TextWatcher() {
             @Override

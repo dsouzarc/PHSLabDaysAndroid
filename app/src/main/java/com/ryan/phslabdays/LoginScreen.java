@@ -11,28 +11,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginScreen extends Activity {
 
     private EditText passwordET;
+    private TextView myName, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
 
-    private void saveEmail(final String email) {
-        final SharedPreferences thePrefs = getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = thePrefs.edit();
-        editor.putString("email", email);
-        editor.commit();
-    }
-
-    private void log(final String message) {
-        Log.e("com.ryan.phslabdays", message);
-    }
+    private SharedPreferences thePrefs;
+    private SharedPreferences.Editor theEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_screen);
 
+        this.thePrefs =
+                getApplicationContext().getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
+        this.theEditor = this.thePrefs.edit();
+
+
+        
         this.passwordET = (EditText) findViewById(R.id.loginEditText);
 
         this.passwordET.addTextChangedListener(new TextWatcher() {
@@ -58,6 +58,9 @@ public class LoginScreen extends Activity {
         });
     }
 
+    private void log(final String message) {
+        Log.e("com.ryan.phslabdays", message);
+    }
 
     private void makeToast(final String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
@@ -72,9 +75,6 @@ public class LoginScreen extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;

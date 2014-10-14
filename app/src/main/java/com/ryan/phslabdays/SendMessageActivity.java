@@ -43,6 +43,12 @@ public class SendMessageActivity extends Activity {
         editor = thePrefs.edit();
         email = thePrefs.getString("email", "");
 
+        final String sendgridUsername = getValue(Variables.SG_USERNAME);
+        final String sendgridPassword = getValue(Variables.SG_PASSWORD);
+        final String gmailUsername = getValue(Variables.GM_USERNAME);
+        final String gmailPassword = getValue(Variables.GM_PASSWORD);
+
+
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);
         final NumberPicker daysOver = (NumberPicker) findViewById(R.id.daysOverPicker);
@@ -71,6 +77,9 @@ public class SendMessageActivity extends Activity {
         });
     }
 
+    private String getValue(final String tag) {
+        return this.thePrefs.getString(tag, "");
+    }
     private void makeToast(final String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }

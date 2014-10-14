@@ -72,19 +72,19 @@ public class LoginScreen extends Activity {
 
                 if(hasValue(sendgridUsername)) {
                     counter++;
-                    save(com.ryan.phslabdays.Variables.SG_USERNAME, getValue(sendgridUsername));
+                    save(Variables.SG_USERNAME, getValue(sendgridUsername));
                 }
                 if(hasValue(sendgridPassword)) {
                     counter++;
-                    save(com.ryan.phslabdays.Variables.SG_PASSWORD, getValue(sendgridPassword));
+                    save(Variables.SG_PASSWORD, getValue(sendgridPassword));
                 }
                 if(hasValue(gmailUsername)) {
                     counter++;
-                    save(com.ryan.phslabdays.Variables.GM_USERNAME, getValue(gmailUsername));
+                    save(Variables.GM_USERNAME, getValue(gmailUsername));
                 }
                 if(hasValue(gmailPassword)) {
                     counter++;
-                    save(com.ryan.phslabdays.Variables.GM_PASSWORD, getValue(gmailPassword));
+                    save(Variables.GM_PASSWORD, getValue(gmailPassword));
                 }
 
                 makeToast("Saved " + counter + " fields");

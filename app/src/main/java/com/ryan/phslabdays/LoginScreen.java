@@ -65,6 +65,32 @@ public class LoginScreen extends Activity {
             }
         });
 
+        this.save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int counter = 0;
+
+                if(hasValue(sendgridUsername)) {
+                    counter++;
+                    save("SendGridUsername", getValue(sendgridUsername));
+                }
+                if(hasValue(sendgridPassword)) {
+                    counter++;
+                    save("SendGridPassword", getValue(sendgridPassword));
+                }
+                if(hasValue(gmailUsername)) {
+                    counter++;
+                    save("GmailUsername", getValue(gmailUsername));
+                }
+                if(hasValue(gmailPassword)) {
+                    counter++;
+                    save("GmailPassword", getValue(gmailPassword));
+                }
+
+                makeToast("Saved " + counter + " fields");
+            }
+        });
+
         this.passwordET.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -86,6 +112,19 @@ public class LoginScreen extends Activity {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    private static boolean hasValue(final EditText field) {
+        return field.getText().toString().length() > 0;
+    }
+
+    private static String getValue(final EditText field) {
+        return field.getText().toString();
+    }
+
+    private void save(final String field, final String value) {
+        this.theEditor.putString(field, value);
+        this.theEditor.commit();
     }
 
     private void log(final String message) {

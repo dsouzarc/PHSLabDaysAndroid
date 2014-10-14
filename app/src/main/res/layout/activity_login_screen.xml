@@ -62,6 +62,7 @@
         android:layout_marginTop="8dp"
         android:layout_below="@+id/gmailUsername"
         android:id="@+id/gmailPassword"
+        android:inputType="textPassword"
         android:visibility="invisible"/>
 
     <TextView

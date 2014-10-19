@@ -1,5 +1,7 @@
 package com.ryan.phslabdays;
 
+import android.util.Log;
+
 /** To hold common variables */
 
 public class Variables {
@@ -22,4 +24,8 @@ public class Variables {
 
     public static final String SPREADSHEET_URL =
             "https://spreadsheets.google.com/feeds/spreadsheets/1OpZPyzOHbBeDHrFaxZbD-5ASiZKM7-U-JNl7PUNXYw4";
+
+    public static void log(final String message) {
+        Log.e("com.ryan.phslabdays", message);
+    }
 }

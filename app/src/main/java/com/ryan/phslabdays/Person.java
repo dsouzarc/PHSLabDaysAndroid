@@ -150,7 +150,13 @@ public class Person {
 
     public static Person getPerson(final JSONObject theObj) {
         try {
-            final String name = theObj.getString("name") == null ? "" : theObj.getString("name");
+            String name;
+            try {
+                name = theObj.getString("name");
+            }
+            catch (Exception e) {
+                name = "";
+            }
             final String phone = theObj.getString("phone");
             final String carrier = theObj.getString("carrier");
             final boolean everyday = theObj.getBoolean("everyday");
@@ -165,6 +171,7 @@ public class Person {
             return new Person(name, phone, carrier, sci, misc, everyday);
         }
         catch (Exception e) {
+            Variables.log(e.toString());
             return null;
         }
     }

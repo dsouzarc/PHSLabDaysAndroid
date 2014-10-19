@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
+import android.content.DialogInterface;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -96,9 +98,32 @@ public class SendMessageActivity extends Activity {
                 editor.putInt("daysOver", daysOver.getValue());
                 editor.putString("noSchool", noSchool.getText().toString());
                 editor.commit();
+
+                final AlertDialog.Builder sendConfirm = new AlertDialog.Builder(SendMessageActivity.this);
+                sendConfirm.setTitle("Please confirm");
+                sendConfirm.setMessage("Are you sure you want to send this notification?");
+
+                sendConfirm.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        new SendWelcomeMessage().execute();
+                    }
+                });
+
+                sendConfirm.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+
+                sendConfirm.show();
+
             }
         });
     }
+
+    
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
         @Override
@@ -178,7 +203,7 @@ public class SendMessageActivity extends Activity {
                 makeToast("Error reading saved people");
             }
             if(progress[0] == 2) {
-                makeToast("Read from text file");
+                makeToast("Read from text file: " + oldPeople.size() + " people");
                 log("Read from txt file");
             }
         }

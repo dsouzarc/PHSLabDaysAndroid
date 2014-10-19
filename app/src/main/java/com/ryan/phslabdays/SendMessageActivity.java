@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.content.DialogInterface;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.github.sendgrid.SendGrid;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import android.widget.LinearLayout;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
@@ -249,6 +251,13 @@ public class SendMessageActivity extends Activity {
             theAlert.cancel();
             makeToast("Finished sending daily");
             messages.add("Finished sending daily");
+
+            final LayoutInflater theInflater = (LayoutInflater)
+                    getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View theView = theInflater.inflate(R.layout.show_results_layout, null);
+            final LinearLayout theLayout = (LinearLayout) theView.findViewById(R.id.layoutForMessages);
+
+            
         }
     }
 

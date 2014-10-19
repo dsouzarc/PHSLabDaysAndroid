@@ -5,10 +5,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_send_message">Send Message Activity</string>
-
-    <string name="username">dsouzarc</string>
-    <string name="password">Ry1996DSCS</string>
-
     <string name="letter_day_prompt">Letter Day</string>
 
     <string-array name="letter_days">

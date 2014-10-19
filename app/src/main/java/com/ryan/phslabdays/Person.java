@@ -1,9 +1,9 @@
 package com.ryan.phslabdays;
 
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
-import org.json.JSONObject;
 
 public class Person {
     private final String name, phoneNumber, carrier;

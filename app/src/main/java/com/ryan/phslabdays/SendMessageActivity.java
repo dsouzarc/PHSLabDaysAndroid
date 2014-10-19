@@ -139,8 +139,7 @@ public class SendMessageActivity extends Activity {
         @Override
         public Void doInBackground(Void... params) {
             publishProgress(0);
-
-            while(newPeople.size() >= 0) {
+            while(newPeople.size() > 0) {
                 final Person person = newPeople.removeFirst();
                 theSendGrid.addTo("6099154930@vtext.com");
                 //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
@@ -183,7 +182,7 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onPostExecute(Void param) {
             this.progressAlert.setMessage("Finished!");
-            makeToast("Finished!");
+            makeToast("Finished sending welcomes!");
             this.theAlert.cancel();
         }
     }

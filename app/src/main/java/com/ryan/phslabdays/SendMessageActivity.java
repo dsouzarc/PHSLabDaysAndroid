@@ -123,7 +123,70 @@ public class SendMessageActivity extends Activity {
         });
     }
 
-    
+    private class SendWelcomeMessage extends AsyncTask<Void, Integer, Void> {
+
+        private final AlertDialog.Builder progressAlert;
+        private AlertDialog theAlert;
+
+        public SendWelcomeMessage() {
+            this.progressAlert = new AlertDialog.Builder(SendMessageActivity.this);
+
+            this.progressAlert.setTitle("Sending Welcome Message: " + newPeople.size());
+            this.progressAlert.setMessage("New People: " + newPeople.size());
+        }
+
+
+        @Override
+        public Void doInBackground(Void... params) {
+            publishProgress(0);
+
+            while(newPeople.size() >= 0) {
+                final Person person = newPeople.removeFirst();
+                theSendGrid.addTo("6099154930@vtext.com");
+                //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                theSendGrid.setFrom("dsouzarc@gmail.com");
+                theSendGrid.setSubject("Welcome to PHS Lab Days");
+
+                String welcomeText = "If you have any questions, please contact " +
+                        "Ryan D'souza @ dsouzarc@gmail.com or (609) 915 4930.";
+
+                if(!person.shouldGetMessage()) {
+                    welcomeText += Person.getLetterDay();
+                }
+
+                theSendGrid.setText(welcomeText);
+                try {
+                    final String status = theSendGrid.send();
+                    makeToast("Sent Welcome! " + person.getName() + " " +  person.getPhoneNumber() +
+                            " " + status);
+                }
+                catch (Exception e) {
+                    makeToast("Error sending welcome" + e.toString() + "\t" + person.getPhoneNumber());
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void onProgressUpdate(final Integer... param) {
+            if(param[0] == 0) {
+                this.theAlert = this.progressAlert.create();
+                this.theAlert.show();
+            }
+            else {
+                this.theAlert.setMessage("Sending welcome to: " +
+                        newPeople.getFirst().getName() + " " +
+                        newPeople.getFirst().getPhoneNumber());
+            }
+        }
+
+        @Override
+        public void onPostExecute(Void param) {
+            this.progressAlert.setMessage("Finished!");
+            makeToast("Finished!");
+            this.theAlert.cancel();
+        }
+    }
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
         @Override

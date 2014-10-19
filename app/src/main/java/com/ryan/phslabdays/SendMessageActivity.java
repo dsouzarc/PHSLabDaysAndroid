@@ -526,14 +526,14 @@ public class SendMessageActivity extends Activity {
                 final LayoutInflater theInflater = (LayoutInflater)
                         getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 final View theView = theInflater.inflate(R.layout.send_to_all_layout, null);
-                final EditText subject = (EditText) theView.findViewById(R.id.messageSubjectET);
-                final EditText message = (EditText) theView.findViewById(R.id.messageTextET);
+                final EditText subjectET = (EditText) theView.findViewById(R.id.messageSubjectET);
+                final EditText messageET = (EditText) theView.findViewById(R.id.messageTextET);
 
-                subject.setBackgroundColor(Color.WHITE);
-                message.setBackgroundColor(Color.WHITE);
+                subjectET.setBackgroundColor(Color.WHITE);
+                messageET.setBackgroundColor(Color.WHITE);
 
-                subject.setTextColor(Color.BLACK);
-                message.setTextColor(Color.BLUE);
+                subjectET.setTextColor(Color.BLACK);
+                messageET.setTextColor(Color.BLUE);
 
                 final AlertDialog.Builder theAlert = new AlertDialog.Builder(SendMessageActivity.this);
                 theAlert.setTitle("Send Message to All");
@@ -542,10 +542,12 @@ public class SendMessageActivity extends Activity {
                 theAlert.setPositiveButton("Send to all", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        final String subject = subjectET.getText().toString();
+                        final String message = messageET.getText().toString();
+
                         final AlertDialog.Builder progress = new AlertDialog.Builder(SendMessageActivity.this);
                         progress.setTitle("Sending message to all: " + oldPeople.size());
-                        progress.setMessage("Subject: " + subject.getText().toString() +
-                                " Message: " + message.getText().toString());
+                        progress.setMessage("Subject: " + subject + " Message: " + message);
                         final AlertDialog result = progress.create();
                         result.show();
                         final Set<Integer> keySet = oldPeople.keySet();
@@ -556,18 +558,18 @@ public class SendMessageActivity extends Activity {
                             theSendGrid.addTo("6099154930@vtext.com");
                             //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                             theSendGrid.setFrom("dsouzarc@gmail.com");
-                            theSendGrid.setSubject(subject.getText().toString());
-                            theSendGrid.setText(message.getText().toString());
+                            theSendGrid.setSubject(subject);
+                            theSendGrid.setText(message);
 
                             try {
                                 final String status = "1"; //theSendGrid.send();
-                                messages.add("Special text: " + status + person.getName() + " " + person.getMessage());
+                                messages.add("Special text: " + status + person.getName() + " " + message);
                             }
                             catch (Exception e) {
                                 messages.add("Special Text FAIL: " + e.toString() + " " +
-                                        person.getName() + " " + person.getMessage());
+                                        person.getName() + " " + message);
                             }
-                            result.setMessage(message.getText().toString() + counter + "/" + oldPeople.size());
+                            result.setMessage(message + counter + "/" + oldPeople.size());
                         }
                         showLogCat();
                         result.cancel();

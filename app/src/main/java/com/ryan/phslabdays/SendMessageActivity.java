@@ -1,29 +1,28 @@
 package com.ryan.phslabdays;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.graphics.Color;
-import android.content.DialogInterface;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
-import java.util.Queue;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.sendgrid.SendGrid;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import android.widget.LinearLayout;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
@@ -39,6 +38,7 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 public class SendMessageActivity extends Activity {
@@ -72,6 +72,8 @@ public class SendMessageActivity extends Activity {
 
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);
+        ((TextView) findViewById(R.id.letterDayTV)).setText("Letter Day (" +
+                thePrefs.getString("letter", "") + ")");
         final NumberPicker daysOver = (NumberPicker) findViewById(R.id.daysOverPicker);
         final EditText noSchool = (EditText) findViewById(R.id.noSchoolET);
         final Button sendButton = (Button) findViewById(R.id.sendButton);

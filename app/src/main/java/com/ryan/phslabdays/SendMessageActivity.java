@@ -3,30 +3,12 @@ package com.ryan.phslabdays;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.AsyncTask;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.Scanner;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import android.os.Bundle;
 import android.util.Log;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import java.util.LinkedList;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -39,8 +21,16 @@ import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class SendMessageActivity extends Activity {
 

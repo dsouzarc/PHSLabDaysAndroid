@@ -127,8 +127,6 @@ public class SendMessageActivity extends Activity {
                 final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
                 publishProgress(0);
 
-                log("ONLINE SIZE: " + feed1.getEntries().size());
-
                 for(ListEntry entry : feed1.getEntries()) {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
@@ -159,12 +157,13 @@ public class SendMessageActivity extends Activity {
                     }
                     catch (Exception e) {
                         log("HERE: " + e.toString());
+                        makeToast("Problem getting someone: " + allValues.toString());
                     }
                 }
             }
             catch (Exception e) {
                 log(e.toString());
-                log("problem");
+                makeToast("Problem getting people online");
             }
             return onlinePeople;
         }
@@ -215,7 +214,7 @@ public class SendMessageActivity extends Activity {
                             theC.MODE_PRIVATE));
             outputStreamWriter.write(allPeople.toString());
             outputStreamWriter.close();
-            log("Saved " + info.toString());
+            log("Saved ");
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -227,7 +226,6 @@ public class SendMessageActivity extends Activity {
     private void updateOldPeople() {
         try {
             final InputStream inputStream = theC.openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
-            log("Found input stream");
 
             if(inputStream != null) {
                 final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -235,18 +233,13 @@ public class SendMessageActivity extends Activity {
                 final StringBuilder stringBuilder = new StringBuilder();
 
                 String receiveString = "";
-                log("Good so far");
                 while ((receiveString = bufferedReader.readLine()) != null ) {
                     stringBuilder.append(receiveString);
                 }
                 inputStream.close();
 
-                log("HERE: " + stringBuilder.toString());
-
                 final JSONObject theObj = new JSONObject(stringBuilder.toString());
-                log("Object created");
                 final JSONArray peopleArray = theObj.getJSONArray("people");
-                log("Array received");
                 for (int i = 0; i < peopleArray.length(); i++) {
                     try {
                         final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
@@ -254,13 +247,14 @@ public class SendMessageActivity extends Activity {
                     }
                     catch (Exception e) {
                         log("Problem from txt: " + peopleArray.getJSONObject(i).toString());
+                        makeToast("Problem: " + peopleArray.getJSONObject(i).toString());
                     }
                 }
             }
         }
         catch (Exception e) {
             log("Error updating from textfile");
-            e.printStackTrace();
+            makeToast("Problem updating textfile");
         }
     }
 
@@ -279,16 +273,13 @@ public class SendMessageActivity extends Activity {
         }
 
         final LinkedList<Character> theChars = new LinkedList<Character>();
-
         for (Character theChar : text.toCharArray()) {
             final int charVal = (int) theChar;
-
             // Between 'A' and 'G'
             if (charVal >= 65 && charVal <= 71) {
                 theChars.add(theChar);
             }
         }
-
         final char[] answer = new char[theChars.size()];
         int counter = 0;
         for (Character c : theChars) {

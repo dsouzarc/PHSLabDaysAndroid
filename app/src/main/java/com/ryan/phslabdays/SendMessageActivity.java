@@ -25,8 +25,10 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -100,25 +102,32 @@ public class SendMessageActivity extends Activity {
 
     /** Updates global hashmap with previously stored people */
     private void updateOldPeople() {
-        try{
-            final FileInputStream fin = openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
-            final StringBuilder data = new StringBuilder();
 
-            int c;
-            while((c = fin.read()) != -1){
-                data.append(Character.toString((char) c));
-            }
+        try {
+            final InputStream inputStream = openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
 
-            final JSONObject theObj = new JSONObject(data.toString());
-            final JSONArray peopleArray = theObj.getJSONArray("people");
+            if ( inputStream != null ) {
+                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                final StringBuilder stringBuilder = new StringBuilder();
 
-            for (int i = 0; i < peopleArray.length(); i++) {
-                final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
-                oldPeople.put(tP.hashCode(), tP);
+                String receiveString = "";
+                while ((receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+                inputStream.close();
+
+                final JSONObject theObj = new JSONObject(stringBuilder.toString());
+                final JSONArray peopleArray = theObj.getJSONArray("people");
+
+                for (int i = 0; i < peopleArray.length(); i++) {
+                    final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
+                    oldPeople.put(tP.hashCode(), tP);
+                }
             }
         }
-        catch(Exception e){
-            e.printStackTrace();
+        catch (Exception e) {
+            log(e.toString());
         }
     }
 
@@ -213,8 +222,8 @@ public class SendMessageActivity extends Activity {
 
     /** Saves the people stored in hashmap to a textfile*/
     private void savePeople() {
+        final JSONObject allPeople = new JSONObject();
         try {
-            final JSONObject allPeople = new JSONObject();
             final JSONArray info = new JSONArray();
 
             final Set<Integer> peopleKey = oldPeople.keySet();
@@ -224,15 +233,17 @@ public class SendMessageActivity extends Activity {
             }
 
             allPeople.put("people", info);
-
-            final FileOutputStream fOut = openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE, MODE_PRIVATE);
-            fOut.write(allPeople.toString().getBytes());
-            fOut.close();
-            Toast.makeText(getBaseContext(),"file saved",
-                    Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE,
+                    Context.MODE_PRIVATE));
+            outputStreamWriter.write(allPeople.toString());
+            outputStreamWriter.close();
+        }
+        catch (Exception e) {
+            Log.e("Exception", "File write failed: " + e.toString());
         }
     }
 

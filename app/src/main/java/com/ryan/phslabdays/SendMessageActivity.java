@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import java.util.LinkedList;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -68,7 +69,7 @@ public class SendMessageActivity extends Activity {
                         final CustomElementCollection allValues = entry.getCustomElements();
 
                         final String name = allValues.getValue("yourname");
-
+                        final String phoneNumber = allValues.getValue("yourphonenumberjustdigits");
 
 
                         log("new row");
@@ -109,6 +110,62 @@ public class SendMessageActivity extends Activity {
                 editor.commit();
             }
         });
+    }
+
+    private static String formatNumber(String text) {
+        text = text.replace("(", "").replace(")", "");
+        text = text.replace("-", "").replace(" ", "");
+
+        // Just in case some idiot puts a police number
+        text = text.replace("911", "");
+        return text;
+    }
+
+    private static char[] getLabDays(String text) {
+        final LinkedList<Character> theChars = new LinkedList<Character>();
+
+        for (Character theChar : text.toCharArray()) {
+            final int charVal = (int) theChar;
+
+            // Between 'A' and 'G'
+            if (charVal >= 65 && charVal <= 71) {
+                theChars.add(theChar);
+            }
+        }
+
+        final char[] answer = new char[theChars.size()];
+        int counter = 0;
+        for (Character c : theChars) {
+            answer[counter] = c;
+            counter++;
+        }
+        return answer;
+    }
+
+    private static String assignCarrier(final String name) {
+        if (name.contains("verizon")) {
+            return Variables.VERIZON;
+        }
+        if (name.contains("at")) {
+            return Variables.ATT;
+        }
+        if (name.contains("t-mobile")) {
+            return Variables.TMOBILE;
+        }
+        if (name.contains("virgin mobile")) {
+            return Variables.VIRGINMOBILE;
+        }
+        if (name.contains("cingular")) {
+            return Variables.CINGULAR;
+        }
+        if (name.contains("sprint")) {
+            return Variables.SPRINT;
+        }
+        if (name.contains("Nextel")) {
+            return Variables.NEXTEL;
+        }
+        System.out.println("ERROR: " + name);
+        return Variables.VERIZON;
     }
 
     private String getValue(final String tag) {

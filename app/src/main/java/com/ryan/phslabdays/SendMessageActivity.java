@@ -9,8 +9,10 @@ import android.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.graphics.Color;
 import android.content.DialogInterface;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -220,7 +222,7 @@ public class SendMessageActivity extends Activity {
                     theSendGrid.setText(person.getMessage());
 
                     try {
-                        final String status = theSendGrid.send();
+                        final String status = "1"; //theSendGrid.send();
                         publishProgress(key);
                         messages.add("Daily: " + status + person.getName() + " " + person.getMessage());
                     }
@@ -256,9 +258,20 @@ public class SendMessageActivity extends Activity {
                     getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View theView = theInflater.inflate(R.layout.show_results_layout, null);
             final LinearLayout theLayout = (LinearLayout) theView.findViewById(R.id.layoutForMessages);
+            setContentView(theLayout);
 
-            
+            while(messages.size() > 0) {
+                theLayout.addView(getView(messages.poll(), messages.size()));
+            }
         }
+    }
+
+    private TextView getView(final String message, final int number) {
+        final TextView textView = new TextView(theC);
+        textView.setText(message);
+        textView.setTextColor(number % 2 == 0 ? Color.BLACK : Color.BLUE);
+        textView.setPadding(0, 16, 0, 0);
+        return textView;
     }
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {

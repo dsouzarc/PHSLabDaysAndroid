@@ -529,6 +529,12 @@ public class SendMessageActivity extends Activity {
                 final EditText subject = (EditText) theView.findViewById(R.id.messageSubjectET);
                 final EditText message = (EditText) theView.findViewById(R.id.messageTextET);
 
+                subject.setBackgroundColor(Color.WHITE);
+                message.setBackgroundColor(Color.WHITE);
+
+                subject.setTextColor(Color.BLACK);
+                message.setTextColor(Color.BLUE);
+
                 final AlertDialog.Builder theAlert = new AlertDialog.Builder(SendMessageActivity.this);
                 theAlert.setTitle("Send Message to All");
                 theAlert.setView(theView);
@@ -561,6 +567,7 @@ public class SendMessageActivity extends Activity {
                             }
                             progress.setMessage(message.getText().toString() + counter + "/" + oldPeople.size());
                         }
+                        showLogCat();
                     }
                 });
                 theAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -64,6 +65,12 @@ public class SendMessageActivity extends Activity {
 
                     final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
                     for(ListEntry entry : feed1.getEntries()) {
+                        final CustomElementCollection allValues = entry.getCustomElements();
+
+                        final String name = allValues.getValue("yourname");
+
+
+
                         log("new row");
                         for(String tag : entry.getCustomElements().getTags()) {
                             log("     "+tag + ": " + entry.getCustomElements().getValue(tag));

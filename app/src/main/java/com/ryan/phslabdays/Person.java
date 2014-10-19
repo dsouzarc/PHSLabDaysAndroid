@@ -134,7 +134,6 @@ public class Person {
 
     public static JSONObject getJSON(final Person thePerson) {
         final JSONObject theObj = new JSONObject();
-
         try {
             theObj.put("name", thePerson.getName());
             theObj.put("phone", thePerson.getPhoneNumber());
@@ -151,12 +150,18 @@ public class Person {
 
     public static Person getPerson(final JSONObject theObj) {
         try {
-            final String name = theObj.getString("name");
+            final String name = theObj.getString("name") == null ? "" : theObj.getString("name");
             final String phone = theObj.getString("phone");
             final String carrier = theObj.getString("carrier");
             final boolean everyday = theObj.getBoolean("everyday");
             final Science sci = Science.getScience(theObj.getJSONObject("science"));
-            final Science misc = Science.getScience(theObj.getJSONObject("misc"));
+            Science misc;
+            try {
+                misc = Science.getScience(theObj.getJSONObject("misc"));
+            }
+            catch (Exception e) {
+                misc = new Science("", new char[]{});
+            }
             return new Person(name, phone, carrier, sci, misc, everyday);
         }
         catch (Exception e) {

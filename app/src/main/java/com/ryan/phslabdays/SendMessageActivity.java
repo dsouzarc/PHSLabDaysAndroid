@@ -84,7 +84,7 @@ public class SendMessageActivity extends Activity {
                 }
 
                 savePeople();
-                makeToast("Saved people in map to textfile");
+                makeToast("Saved people in map to textfile: " + oldPeople.size());
 
                 Person.message = greeting.getText().toString();
                 Person.letterDay = letterDay.getSelectedItem().toString().charAt(0);
@@ -100,41 +100,9 @@ public class SendMessageActivity extends Activity {
         });
     }
 
-    /** Updates global hashmap with previously stored people */
-    private void updateOldPeople() {
-
-        try {
-            final InputStream inputStream = openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
-
-            if ( inputStream != null ) {
-                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                final StringBuilder stringBuilder = new StringBuilder();
-
-                String receiveString = "";
-                while ((receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-                inputStream.close();
-
-                final JSONObject theObj = new JSONObject(stringBuilder.toString());
-                final JSONArray peopleArray = theObj.getJSONArray("people");
-
-                for (int i = 0; i < peopleArray.length(); i++) {
-                    final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
-                    oldPeople.put(tP.hashCode(), tP);
-                }
-            }
-        }
-        catch (Exception e) {
-            log(e.toString());
-        }
-    }
-
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
         @Override
         public LinkedList<Person> doInBackground(Void... params) {
-
             updateOldPeople();
             if(oldPeople.size() < 5) {
                 publishProgress(1);
@@ -159,18 +127,29 @@ public class SendMessageActivity extends Activity {
                 final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
                 publishProgress(0);
 
+                log("ONLINE SIZE: " + feed1.getEntries().size());
+
                 for(ListEntry entry : feed1.getEntries()) {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
                     try {
-                        final String name = allValues.getValue("yourname");
-                        final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
+                        final String name = allValues.getValue("yourname") == null
+                                ? "" : allValues.getValue("yourname");
+
+                        final String phoneNumber =
+                                formatNumber(allValues.getValue("yourphonenumberjustdigits"));
+
                         final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
-                        final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
+                        final boolean everyday = allValues
+                                .getValue("whenwouldyouliketogettextnotifications").contains("Every");
+
                         final String science = allValues.getValue("science");
-                        final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
+                        final char[] sciencelabdays =
+                                getLabDays(allValues.getValue("sciencelabdays"));
+
                         final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
-                        final String miscDay = allValues.getValue("misc.notificationmessage");
+                        final String miscDay = allValues.getValue("misc.notificationmessage")
+                                == null ? "" : allValues.getValue("misc.notificationmessage");
 
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
@@ -225,25 +204,63 @@ public class SendMessageActivity extends Activity {
         final JSONObject allPeople = new JSONObject();
         try {
             final JSONArray info = new JSONArray();
-
             final Set<Integer> peopleKey = oldPeople.keySet();
-
             for (Integer key : peopleKey) {
                 info.put(oldPeople.get(key).getJSON());
             }
-
             allPeople.put("people", info);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE,
-                    Context.MODE_PRIVATE));
+
+            final OutputStreamWriter outputStreamWriter =
+                    new OutputStreamWriter(theC.openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE,
+                            theC.MODE_PRIVATE));
             outputStreamWriter.write(allPeople.toString());
             outputStreamWriter.close();
+            log("Saved " + info.toString());
         }
         catch (Exception e) {
-            Log.e("Exception", "File write failed: " + e.toString());
+            e.printStackTrace();
+            log("error saving ");
+        }
+    }
+
+    /** Updates global hashmap with previously stored people */
+    private void updateOldPeople() {
+        try {
+            final InputStream inputStream = theC.openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
+            log("Found input stream");
+
+            if(inputStream != null) {
+                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                final StringBuilder stringBuilder = new StringBuilder();
+
+                String receiveString = "";
+                log("Good so far");
+                while ((receiveString = bufferedReader.readLine()) != null ) {
+                    stringBuilder.append(receiveString);
+                }
+                inputStream.close();
+
+                log("HERE: " + stringBuilder.toString());
+
+                final JSONObject theObj = new JSONObject(stringBuilder.toString());
+                log("Object created");
+                final JSONArray peopleArray = theObj.getJSONArray("people");
+                log("Array received");
+                for (int i = 0; i < peopleArray.length(); i++) {
+                    try {
+                        final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
+                        oldPeople.put(tP.hashCode(), tP);
+                    }
+                    catch (Exception e) {
+                        log("Problem from txt: " + peopleArray.getJSONObject(i).toString());
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            log("Error updating from textfile");
+            e.printStackTrace();
         }
     }
 
@@ -258,7 +275,7 @@ public class SendMessageActivity extends Activity {
 
     private static char[] getLabDays(String text) {
         if(text == null) {
-            return null;
+            return new char[]{};
         }
 
         final LinkedList<Character> theChars = new LinkedList<Character>();

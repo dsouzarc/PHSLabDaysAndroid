@@ -68,7 +68,7 @@ public class Science {
             return new Science(theObject.getString("name"),
                     stringToLetters(theObject.getString("letters")));
         } catch (Exception e) {
-            return null;
+            return new Science("", new char[]{});
         }
     }
 

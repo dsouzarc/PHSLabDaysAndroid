@@ -577,6 +577,7 @@ public class SendMessageActivity extends Activity {
                                                 person.getName() + " " + message);
                                     }
                                     publishProgress(counter);
+                                    counter++;
                                 }
                                 return null;
                             }

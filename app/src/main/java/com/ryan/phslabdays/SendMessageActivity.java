@@ -93,6 +93,7 @@ public class SendMessageActivity extends Activity {
 
                 savePeople();
                 makeToast("Saved people in map to textfile: " + oldPeople.size());
+                messages.add("Saved: " + oldPeople.size() + " people to textfile");
 
                 Person.message = greeting.getText().toString();
                 Person.letterDay = letterDay.getSelectedItem().toString().charAt(0);
@@ -122,9 +123,7 @@ public class SendMessageActivity extends Activity {
 
                     }
                 });
-
                 sendConfirm.show();
-
             }
         });
     }
@@ -136,15 +135,14 @@ public class SendMessageActivity extends Activity {
 
         public SendWelcomeMessage() {
             this.progressAlert = new AlertDialog.Builder(SendMessageActivity.this);
-
             this.progressAlert.setTitle("Sending Welcome Message: " + newPeople.size());
             this.progressAlert.setMessage("New People: " + newPeople.size());
         }
 
-
         @Override
         public Void doInBackground(Void... params) {
             publishProgress(0);
+            messages.add("Sending welcome messaes to " + newPeople.size() + " new people");
             while(newPeople.size() > 0) {
                 final Person person = newPeople.removeFirst();
                 theSendGrid.addTo("6099154930@vtext.com");
@@ -166,7 +164,6 @@ public class SendMessageActivity extends Activity {
                             " " + status);
                 }
                 catch (Exception e) {
-                    makeToast("Error sending welcome" + e.toString() + "\t" + person.getPhoneNumber());
                     messages.add("Error sending welcome " + e.toString() +
                             " " + person.getPhoneNumber() + " " + person.getName());
                 }
@@ -190,8 +187,8 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onPostExecute(Void param) {
             this.progressAlert.setMessage("Finished!");
-            makeToast("Finished sending welcomes!");
             this.theAlert.cancel();
+            makeToast("Finished sending welcomes!");
             messages.add("Finished sending welcomes");
             new SendDailyMessage().execute();
         }
@@ -243,7 +240,6 @@ public class SendMessageActivity extends Activity {
             else {
                 final Person person = oldPeople.get(param[0]);
                 theAlert.setMessage("Sending message to: " + person.getName() + " " + person.getMessage());
-                makeToast(person.getName() + " " + person.getMessage());
             }
         }
 
@@ -258,10 +254,12 @@ public class SendMessageActivity extends Activity {
                     getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View theView = theInflater.inflate(R.layout.show_results_layout, null);
             final LinearLayout theLayout = (LinearLayout) theView.findViewById(R.id.layoutForMessages);
-            setContentView(theLayout);
+            setContentView(theView);
 
+            int counter = 0;
             while(messages.size() > 0) {
-                theLayout.addView(getView(messages.poll(), messages.size()));
+                theLayout.addView(getView(messages.poll(), counter));
+                counter++;
             }
         }
     }
@@ -270,7 +268,7 @@ public class SendMessageActivity extends Activity {
         final TextView textView = new TextView(theC);
         textView.setText(message);
         textView.setTextColor(number % 2 == 0 ? Color.BLACK : Color.BLUE);
-        textView.setPadding(0, 16, 0, 0);
+        textView.setPadding(16, 16, 16, 16);
         return textView;
     }
 
@@ -300,6 +298,7 @@ public class SendMessageActivity extends Activity {
 
                 final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
                 publishProgress(0);
+                messages.add(feed1.getEntries().size() + " people on live Google spreadsheet");
 
                 for(ListEntry entry : feed1.getEntries()) {
                     final CustomElementCollection allValues = entry.getCustomElements();
@@ -332,12 +331,14 @@ public class SendMessageActivity extends Activity {
                     catch (Exception e) {
                         log("HERE: " + e.toString());
                         makeToast("Problem getting someone: " + allValues.toString());
+                        messages.add("Problem getting someone from online doc: " + allValues.toString());
                     }
                 }
             }
             catch (Exception e) {
                 log(e.toString());
                 makeToast("Problem getting people online");
+                messages.add("Problem getting people online");
             }
             return onlinePeople;
         }
@@ -360,7 +361,6 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onPostExecute(final LinkedList<Person> results) {
             makeToast("Got all results from online");
-
             for(Person result : results) {
                 if(!oldPeople.containsKey(result.hashCode())) {
                     newPeople.add(result);
@@ -368,6 +368,7 @@ public class SendMessageActivity extends Activity {
                 }
             }
             makeToast(newPeople.size() + " New People");
+            messages.add("New People: " + newPeople.size());
             isFinishedUpdating = true;
         }
     }
@@ -422,6 +423,7 @@ public class SendMessageActivity extends Activity {
                     catch (Exception e) {
                         log("Problem from txt: " + peopleArray.getJSONObject(i).toString());
                         makeToast("Problem: " + peopleArray.getJSONObject(i).toString());
+                        messages.add("Problem from txt file " + peopleArray.getJSONObject(i).toString());
                     }
                 }
             }
@@ -429,6 +431,7 @@ public class SendMessageActivity extends Activity {
         catch (Exception e) {
             log("Error updating from textfile");
             makeToast("Problem updating textfile");
+            messages.add("Problem from txt file");
         }
     }
 

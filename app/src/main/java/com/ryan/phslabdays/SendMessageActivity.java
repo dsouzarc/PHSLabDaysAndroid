@@ -188,6 +188,8 @@ public class SendMessageActivity extends Activity {
             this.progressAlert.setMessage("Finished!");
             makeToast("Finished sending welcomes!");
             this.theAlert.cancel();
+            messages.add("Finished sending welcomes");
+            new SendDailyMessage().execute();
         }
     }
 
@@ -206,7 +208,6 @@ public class SendMessageActivity extends Activity {
         @Override
         public Void doInBackground(final Void... params) {
             final Set<Integer> keySet = oldPeople.keySet();
-
             for(Integer key : keySet) {
                 final Person person = oldPeople.get(key);
                 if(person.shouldGetMessage()) {
@@ -215,6 +216,16 @@ public class SendMessageActivity extends Activity {
                     theSendGrid.setFrom("dsouzarc@gmail.com");
                     theSendGrid.setSubject(person.getGreeting());
                     theSendGrid.setText(person.getMessage());
+
+                    try {
+                        final String status = theSendGrid.send();
+                        publishProgress(key);
+                        messages.add("Daily: " + status + person.getName() + " " + person.getMessage());
+                    }
+                    catch (Exception e) {
+                        messages.add("Daily FAIL: " + e.toString() + " " +
+                                person.getName() + " " + person.getMessage());
+                    }
                 }
             }
             return null;
@@ -237,8 +248,8 @@ public class SendMessageActivity extends Activity {
             theAlert.setMessage("finished sending daily");
             theAlert.cancel();
             makeToast("Finished sending daily");
+            messages.add("Finished sending daily");
         }
-
     }
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {

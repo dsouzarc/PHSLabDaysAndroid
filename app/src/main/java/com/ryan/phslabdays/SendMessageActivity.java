@@ -543,9 +543,11 @@ public class SendMessageActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         final AlertDialog.Builder progress = new AlertDialog.Builder(SendMessageActivity.this);
-
                         progress.setTitle("Sending message to all: " + oldPeople.size());
-                        progress.show();
+                        progress.setMessage("Subject: " + subject.getText().toString() +
+                                " Message: " + message.getText().toString());
+                        final AlertDialog result = progress.create();
+                        result.show();
                         final Set<Integer> keySet = oldPeople.keySet();
 
                         int counter = 0;
@@ -565,9 +567,10 @@ public class SendMessageActivity extends Activity {
                                 messages.add("Special Text FAIL: " + e.toString() + " " +
                                         person.getName() + " " + person.getMessage());
                             }
-                            progress.setMessage(message.getText().toString() + counter + "/" + oldPeople.size());
+                            result.setMessage(message.getText().toString() + counter + "/" + oldPeople.size());
                         }
                         showLogCat();
+                        result.cancel();
                     }
                 });
                 theAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

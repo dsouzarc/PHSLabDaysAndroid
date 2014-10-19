@@ -147,8 +147,7 @@ public class SendMessageActivity extends Activity {
             messages.add("Sending welcome messaes to " + newPeople.size() + " new people");
             while(newPeople.size() > 0) {
                 final Person person = newPeople.removeFirst();
-                theSendGrid.addTo("6099154930@vtext.com");
-                //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                 theSendGrid.setFrom("dsouzarc@gmail.com");
                 theSendGrid.setSubject("Welcome to PHS Lab Days");
 
@@ -214,14 +213,12 @@ public class SendMessageActivity extends Activity {
             for(Integer key : keySet) {
                 final Person person = oldPeople.get(key);
                 if(person.shouldGetMessage()) {
-                    theSendGrid.addTo("6099154930@vtext.com");
-                    //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                    theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                     theSendGrid.setFrom("dsouzarc@gmail.com");
                     theSendGrid.setSubject(person.getGreeting());
                     theSendGrid.setText(person.getMessage());
-
                     try {
-                        final String status = "1"; //theSendGrid.send();
+                        final String status = theSendGrid.send();
                         publishProgress(key);
                         messages.add("Daily: " + status + person.getName() + " " + person.getMessage());
                     }
@@ -561,8 +558,7 @@ public class SendMessageActivity extends Activity {
 
                                 for(Integer key : keySet) {
                                     final Person person = oldPeople.get(key);
-                                    theSendGrid.addTo("6099154930@vtext.com");
-                                    //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                                    theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                                     theSendGrid.setFrom("dsouzarc@gmail.com");
                                     theSendGrid.setSubject(subject);
                                     theSendGrid.setText(message);

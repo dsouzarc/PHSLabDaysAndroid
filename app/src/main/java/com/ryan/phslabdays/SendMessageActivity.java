@@ -69,7 +69,15 @@ public class SendMessageActivity extends Activity {
                         final CustomElementCollection allValues = entry.getCustomElements();
 
                         final String name = allValues.getValue("yourname");
-                        final String phoneNumber = allValues.getValue("yourphonenumberjustdigits");
+                        final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
+                        final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
+                        final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
+                        final String science = allValues.getValue("science");
+                        final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
+                        final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
+                        final String miscDay = allValues.getValue("misc.notificationmessage");
+
+                        
 
 
                         log("new row");

@@ -249,20 +249,23 @@ public class SendMessageActivity extends Activity {
         public void onPostExecute(final Void param) {
             theAlert.setMessage("finished sending daily");
             theAlert.cancel();
+            showLogCat();
             makeToast("Finished sending daily");
             messages.add("Finished sending daily");
+        }
+    }
 
-            final LayoutInflater theInflater = (LayoutInflater)
-                    getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View theView = theInflater.inflate(R.layout.show_results_layout, null);
-            final LinearLayout theLayout = (LinearLayout) theView.findViewById(R.id.layoutForMessages);
-            setContentView(theView);
+    private void showLogCat() {
+        final LayoutInflater theInflater = (LayoutInflater)
+                getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View theView = theInflater.inflate(R.layout.show_results_layout, null);
+        final LinearLayout theLayout = (LinearLayout) theView.findViewById(R.id.layoutForMessages);
+        setContentView(theView);
 
-            int counter = 0;
-            while(messages.size() > 0) {
-                theLayout.addView(getView(messages.poll(), counter));
-                counter++;
-            }
+        int counter = 0;
+        while(messages.size() > 0) {
+            theLayout.addView(getView(messages.poll(), counter));
+            counter++;
         }
     }
 
@@ -520,8 +523,53 @@ public class SendMessageActivity extends Activity {
                     return super.onOptionsItemSelected(item);
                 }
 
+                final LayoutInflater theInflater = (LayoutInflater)
+                        getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                final View theView = theInflater.inflate(R.layout.send_to_all_layout, null);
+                final EditText subject = (EditText) theView.findViewById(R.id.messageSubjectET);
+                final EditText message = (EditText) theView.findViewById(R.id.messageTextET);
 
+                final AlertDialog.Builder theAlert = new AlertDialog.Builder(SendMessageActivity.this);
+                theAlert.setTitle("Send Message to All");
+                theAlert.setView(theView);
 
+                theAlert.setPositiveButton("Send to all", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final AlertDialog.Builder progress = new AlertDialog.Builder(SendMessageActivity.this);
+
+                        progress.setTitle("Sending message to all: " + oldPeople.size());
+                        progress.show();
+                        final Set<Integer> keySet = oldPeople.keySet();
+
+                        int counter = 0;
+                        for(Integer key : keySet) {
+                            final Person person = oldPeople.get(key);
+                            theSendGrid.addTo("6099154930@vtext.com");
+                            //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                            theSendGrid.setFrom("dsouzarc@gmail.com");
+                            theSendGrid.setSubject(subject.getText().toString());
+                            theSendGrid.setText(message.getText().toString());
+
+                            try {
+                                final String status = "1"; //theSendGrid.send();
+                                messages.add("Special text: " + status + person.getName() + " " + person.getMessage());
+                            }
+                            catch (Exception e) {
+                                messages.add("Special Text FAIL: " + e.toString() + " " +
+                                        person.getName() + " " + person.getMessage());
+                            }
+                            progress.setMessage(message.getText().toString() + counter + "/" + oldPeople.size());
+                        }
+                    }
+                });
+                theAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                theAlert.show();
                 break;
             default:
                 break;

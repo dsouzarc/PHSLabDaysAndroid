@@ -86,6 +86,12 @@ public class SendMessageActivity extends Activity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!isFinishedUpdating) {
+                    makeToast("Please wait, still updating");
+                    return;
+                }
+
+
                 Person.message = greeting.getText().toString();
                 Person.letterDay = letterDay.getSelectedItem().toString().charAt(0);
                 Person.numSchoolDaysOver = daysOver.getValue();
@@ -205,10 +211,36 @@ public class SendMessageActivity extends Activity {
             for(Person result : results) {
                 if(!oldPeople.containsKey(result.hashCode())) {
                     newPeople.add(result);
+                    oldPeople.put(result.hashCode(), result);
                 }
             }
             makeToast(newPeople.size() + " New People");
             isFinishedUpdating = true;
+        }
+    }
+
+    /** Saves the people stored in hashmap to a textfile*/
+    private void savePeople() {
+        try {
+            final JSONObject allPeople = new JSONObject();
+            final JSONArray info = new JSONArray();
+
+            final Set<Integer> peopleKey = oldPeople.keySet();
+
+            for (Integer key : peopleKey) {
+                info.put(oldPeople.get(key).getJSON());
+            }
+
+            allPeople.put("people", info);
+
+            final FileOutputStream fOut = openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE, MODE_PRIVATE);
+            fOut.write(allPeople.toString().getBytes());
+            fOut.close();
+            Toast.makeText(getBaseContext(),"file saved",
+                    Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 

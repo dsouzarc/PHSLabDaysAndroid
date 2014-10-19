@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,10 +22,13 @@ import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-
+import java.util.HashMap;
 import java.net.URL;
 
 public class SendMessageActivity extends Activity {
+
+    private final HashMap<Integer, Person> oldPeople = new HashMap<Integer, Person>();
+    private final LinkedList<Person> newPeople = new LinkedList<Person>();
 
     private SharedPreferences thePrefs;
     private SharedPreferences.Editor editor;
@@ -45,52 +49,8 @@ public class SendMessageActivity extends Activity {
 
         final String sendgridUsername = getValue(Variables.SG_USERNAME);
         final String sendgridPassword = getValue(Variables.SG_PASSWORD);
-        final String gmailUsername = getValue(Variables.GM_USERNAME);
-        final String gmailPassword = getValue(Variables.GM_PASSWORD);
 
         this.theSendGrid = new SendGrid(sendgridUsername, sendgridPassword);
-
-        final SpreadsheetService service =
-                new SpreadsheetService("MySpreadsheetIntegration-v1");
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    log("Here");
-                    service.setUserCredentials(gmailUsername, gmailPassword);
-
-                    final URL SHEET_URL = new URL(Variables.SPREADSHEET_URL);
-                    final SpreadsheetEntry spreadsheet = service.getEntry(SHEET_URL, SpreadsheetEntry.class);
-                    final URL listFeedUrl = (spreadsheet.getWorksheets().get(0)).getListFeedUrl();
-
-                    final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
-                    for(ListEntry entry : feed1.getEntries()) {
-                        final CustomElementCollection allValues = entry.getCustomElements();
-
-                        final String name = allValues.getValue("yourname");
-                        final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
-                        final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
-                        final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
-                        final String science = allValues.getValue("science");
-                        final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
-                        final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
-                        final String miscDay = allValues.getValue("misc.notificationmessage");
-
-                        
-
-
-                        log("new row");
-                        for(String tag : entry.getCustomElements().getTags()) {
-                            log("     "+tag + ": " + entry.getCustomElements().getValue(tag));
-                        }
-                    }
-                }
-                catch (Exception e) {
-                    log(e.toString());
-                }
-            }
-        }).start();
 
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);
@@ -118,6 +78,63 @@ public class SendMessageActivity extends Activity {
                 editor.commit();
             }
         });
+    }
+
+    private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
+        @Override
+        public LinkedList<Person> doInBackground(Void... params) {
+            final SpreadsheetService service =
+                    new SpreadsheetService("MySpreadsheetIntegration-v1");
+            final LinkedList<Person> onlinePeople = new LinkedList<Person>();
+
+            try {
+                final String gmailUsername = getValue(Variables.GM_USERNAME);
+                final String gmailPassword = getValue(Variables.GM_PASSWORD);
+                service.setUserCredentials(gmailUsername, gmailPassword);
+
+                final URL SHEET_URL = new URL(Variables.SPREADSHEET_URL);
+                final SpreadsheetEntry spreadsheet = service.getEntry(SHEET_URL, SpreadsheetEntry.class);
+                final URL listFeedUrl = (spreadsheet.getWorksheets().get(0)).getListFeedUrl();
+
+                final ListFeed feed1 = service.getFeed(listFeedUrl, ListFeed.class);
+                publishProgress(0);
+
+                for(ListEntry entry : feed1.getEntries()) {
+                    final CustomElementCollection allValues = entry.getCustomElements();
+
+                    final String name = allValues.getValue("yourname");
+                    final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
+                    final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
+                    final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
+                    final String science = allValues.getValue("science");
+                    final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
+                    final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
+                    final String miscDay = allValues.getValue("misc.notificationmessage");
+
+                    final Person person = new Person(name, phoneNumber, carrier,
+                            new Science(science, sciencelabdays), new Science(miscDay,
+                            misclabdays), everyday);
+                    onlinePeople.add(person);
+                }
+            }
+            catch (Exception e) {
+                log(e.toString());
+            }
+            return onlinePeople;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            if(progress[0] == 0) {
+                makeToast("Got Form Results from online");
+            }
+        }
+
+        @Override
+        public void onPostExecute(final LinkedList<Person> results) {
+            makeToast("Got all results from online");
+        }
+
     }
 
     private static String formatNumber(String text) {

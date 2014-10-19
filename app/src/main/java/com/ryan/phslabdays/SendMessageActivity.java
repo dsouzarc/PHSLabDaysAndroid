@@ -5,7 +5,24 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.AsyncTask;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.Scanner;
+import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.util.Log;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +53,7 @@ public class SendMessageActivity extends Activity {
     private String email;
 
     private SendGrid theSendGrid;
+    private boolean isFinishedUpdating = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +75,8 @@ public class SendMessageActivity extends Activity {
         final NumberPicker daysOver = (NumberPicker) findViewById(R.id.daysOverPicker);
         final EditText noSchool = (EditText) findViewById(R.id.noSchoolET);
         final Button sendButton = (Button) findViewById(R.id.sendButton);
+
+        new GetPeopleOnLine().execute();
 
         greeting.setText(thePrefs.getString("greeting", ""));
         daysOver.setMaxValue(180);
@@ -80,9 +100,42 @@ public class SendMessageActivity extends Activity {
         });
     }
 
+    /** Updates global hashmap with previously stored people */
+    private void updateOldPeople() {
+        try{
+            final FileInputStream fin = openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
+            final StringBuilder data = new StringBuilder();
+
+            int c;
+            while((c = fin.read()) != -1){
+                data.append(Character.toString((char) c));
+            }
+
+            final JSONObject theObj = new JSONObject(data.toString());
+            final JSONArray peopleArray = theObj.getJSONArray("people");
+
+            for (int i = 0; i < peopleArray.length(); i++) {
+                final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
+                oldPeople.put(tP.hashCode(), tP);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
         @Override
         public LinkedList<Person> doInBackground(Void... params) {
+
+            updateOldPeople();
+            if(oldPeople.size() < 5) {
+                publishProgress(1);
+            }
+            else {
+                publishProgress(2);
+            }
+
             final SpreadsheetService service =
                     new SpreadsheetService("MySpreadsheetIntegration-v1");
             final LinkedList<Person> onlinePeople = new LinkedList<Person>();
@@ -102,23 +155,30 @@ public class SendMessageActivity extends Activity {
                 for(ListEntry entry : feed1.getEntries()) {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
-                    final String name = allValues.getValue("yourname");
-                    final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
-                    final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
-                    final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
-                    final String science = allValues.getValue("science");
-                    final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
-                    final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
-                    final String miscDay = allValues.getValue("misc.notificationmessage");
+                    try {
+                        final String name = allValues.getValue("yourname");
+                        final String phoneNumber = formatNumber(allValues.getValue("yourphonenumberjustdigits"));
+                        final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
+                        final boolean everyday = allValues.getValue("whenwouldyouliketogettextnotifications").contains("Every");
+                        final String science = allValues.getValue("science");
+                        final char[] sciencelabdays = getLabDays(allValues.getValue("sciencelabdays"));
+                        final char[] misclabdays = getLabDays(allValues.getValue("misc.textdays"));
+                        final String miscDay = allValues.getValue("misc.notificationmessage");
 
-                    final Person person = new Person(name, phoneNumber, carrier,
-                            new Science(science, sciencelabdays), new Science(miscDay,
-                            misclabdays), everyday);
-                    onlinePeople.add(person);
+                        final Person person = new Person(name, phoneNumber, carrier,
+                                new Science(science, sciencelabdays), new Science(miscDay,
+                                misclabdays), everyday
+                        );
+                        onlinePeople.add(person);
+                    }
+                    catch (Exception e) {
+                        log("HERE: " + e.toString());
+                    }
                 }
             }
             catch (Exception e) {
                 log(e.toString());
+                log("problem");
             }
             return onlinePeople;
         }
@@ -126,15 +186,30 @@ public class SendMessageActivity extends Activity {
         @Override
         protected void onProgressUpdate(Integer... progress) {
             if(progress[0] == 0) {
+                log("Got form results from online");
                 makeToast("Got Form Results from online");
+            }
+            if(progress[0] == 1) {
+                makeToast("Error reading saved people");
+            }
+            if(progress[0] == 2) {
+                makeToast("Read from text file");
+                log("Read from txt file");
             }
         }
 
         @Override
         public void onPostExecute(final LinkedList<Person> results) {
             makeToast("Got all results from online");
-        }
 
+            for(Person result : results) {
+                if(!oldPeople.containsKey(result.hashCode())) {
+                    newPeople.add(result);
+                }
+            }
+            makeToast(newPeople.size() + " New People");
+            isFinishedUpdating = true;
+        }
     }
 
     private static String formatNumber(String text) {
@@ -147,6 +222,10 @@ public class SendMessageActivity extends Activity {
     }
 
     private static char[] getLabDays(String text) {
+        if(text == null) {
+            return null;
+        }
+
         final LinkedList<Character> theChars = new LinkedList<Character>();
 
         for (Character theChar : text.toCharArray()) {

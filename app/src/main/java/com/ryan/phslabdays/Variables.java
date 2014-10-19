@@ -13,6 +13,8 @@ public class Variables {
 	public static final String SPRINT = "@messaging.sprintpcs.com";
 	public static final String NEXTEL = "@messaging.nextel.com";
 
+    public static final String OLD_PEOPLE_TEXT_FILE = "oldpeople.txt";
+
     public static final String SG_USERNAME = "sendgrid_username";
     public static final String SG_PASSWORD = "sendgrid_password";
     public static final String GM_USERNAME = "gmail_username";

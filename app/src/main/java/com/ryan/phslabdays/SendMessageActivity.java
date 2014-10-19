@@ -91,6 +91,8 @@ public class SendMessageActivity extends Activity {
                     return;
                 }
 
+                savePeople();
+                makeToast("Saved people in map to textfile");
 
                 Person.message = greeting.getText().toString();
                 Person.letterDay = letterDay.getSelectedItem().toString().charAt(0);

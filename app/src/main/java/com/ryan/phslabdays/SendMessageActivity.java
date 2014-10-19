@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import java.util.Queue;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class SendMessageActivity extends Activity {
 
     private final HashMap<Integer, Person> oldPeople = new HashMap<Integer, Person>();
     private final LinkedList<Person> newPeople = new LinkedList<Person>();
+    private final Queue<String> messages = new LinkedList<String>();
 
     private SharedPreferences thePrefs;
     private SharedPreferences.Editor editor;
@@ -152,15 +154,17 @@ public class SendMessageActivity extends Activity {
                 if(!person.shouldGetMessage()) {
                     welcomeText += Person.getLetterDay();
                 }
-
+                publishProgress(1);
                 theSendGrid.setText(welcomeText);
                 try {
                     final String status = theSendGrid.send();
-                    makeToast("Sent Welcome! " + person.getName() + " " +  person.getPhoneNumber() +
+                    messages.add("Sent Welcome! " + person.getName() + " " +  person.getPhoneNumber() +
                             " " + status);
                 }
                 catch (Exception e) {
                     makeToast("Error sending welcome" + e.toString() + "\t" + person.getPhoneNumber());
+                    messages.add("Error sending welcome " + e.toString() +
+                            " " + person.getPhoneNumber() + " " + person.getName());
                 }
             }
             return null;
@@ -185,6 +189,56 @@ public class SendMessageActivity extends Activity {
             makeToast("Finished sending welcomes!");
             this.theAlert.cancel();
         }
+    }
+
+    private class SendDailyMessage extends AsyncTask<Void, Integer, Void> {
+
+        final AlertDialog.Builder theAlertB;
+        final AlertDialog theAlert;
+
+        public SendDailyMessage() {
+            this.theAlertB = new AlertDialog.Builder(SendMessageActivity.this);
+            this.theAlertB.setTitle("Sending Daily to: " + oldPeople.size());
+            this.theAlertB.setMessage("Sending message to: " + oldPeople.size());
+            this.theAlert = theAlertB.create();
+        }
+
+        @Override
+        public Void doInBackground(final Void... params) {
+            final Set<Integer> keySet = oldPeople.keySet();
+
+            for(Integer key : keySet) {
+                final Person person = oldPeople.get(key);
+                if(person.shouldGetMessage()) {
+                    theSendGrid.addTo("6099154930@vtext.com");
+                    //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                    theSendGrid.setFrom("dsouzarc@gmail.com");
+                    theSendGrid.setSubject(person.getGreeting());
+                    theSendGrid.setText(person.getMessage());
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void onProgressUpdate(final Integer... param) {
+            if(param[0] == 0) {
+                theAlert.show();
+            }
+            else {
+                final Person person = oldPeople.get(param[0]);
+                theAlert.setMessage("Sending message to: " + person.getName() + " " + person.getMessage());
+                makeToast(person.getName() + " " + person.getMessage());
+            }
+        }
+
+        @Override
+        public void onPostExecute(final Void param) {
+            theAlert.setMessage("finished sending daily");
+            theAlert.cancel();
+            makeToast("Finished sending daily");
+        }
+
     }
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {

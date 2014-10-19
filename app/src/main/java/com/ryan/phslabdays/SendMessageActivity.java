@@ -515,6 +515,13 @@ public class SendMessageActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sendCustomMessage:
+                if(!isFinishedUpdating) {
+                    makeToast("Please wait. Still updating");
+                    return super.onOptionsItemSelected(item);
+                }
+
+
+
                 break;
             default:
                 break;

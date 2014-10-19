@@ -542,37 +542,58 @@ public class SendMessageActivity extends Activity {
                 theAlert.setPositiveButton("Send to all", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+
                         final String subject = subjectET.getText().toString();
                         final String message = messageET.getText().toString();
-
                         final AlertDialog.Builder progress = new AlertDialog.Builder(SendMessageActivity.this);
                         progress.setTitle("Sending message to all: " + oldPeople.size());
                         progress.setMessage("Subject: " + subject + " Message: " + message);
+
                         final AlertDialog result = progress.create();
                         result.show();
-                        final Set<Integer> keySet = oldPeople.keySet();
 
-                        int counter = 0;
-                        for(Integer key : keySet) {
-                            final Person person = oldPeople.get(key);
-                            theSendGrid.addTo("6099154930@vtext.com");
-                            //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
-                            theSendGrid.setFrom("dsouzarc@gmail.com");
-                            theSendGrid.setSubject(subject);
-                            theSendGrid.setText(message);
+                        final AsyncTask<Void, Integer, Void> sendInBackground =
+                                new AsyncTask<Void, Integer, Void>() {
+                            @Override
+                            public Void doInBackground(Void... params) {
+                                final Set<Integer> keySet = oldPeople.keySet();
+                                int counter = 0;
 
-                            try {
-                                final String status = "1"; //theSendGrid.send();
-                                messages.add("Special text: " + status + person.getName() + " " + message);
+                                for(Integer key : keySet) {
+                                    final Person person = oldPeople.get(key);
+                                    theSendGrid.addTo("6099154930@vtext.com");
+                                    //theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                                    theSendGrid.setFrom("dsouzarc@gmail.com");
+                                    theSendGrid.setSubject(subject);
+                                    theSendGrid.setText(message);
+
+                                    try {
+                                        final String status = theSendGrid.send();
+                                        messages.add("Special text: " + status + person.getName() +
+                                                " " + message);
+                                    }
+                                    catch (Exception e) {
+                                        messages.add("Special Text FAIL: " + e.toString() + " " +
+                                                person.getName() + " " + message);
+                                    }
+                                    publishProgress(counter);
+                                }
+                                return null;
                             }
-                            catch (Exception e) {
-                                messages.add("Special Text FAIL: " + e.toString() + " " +
-                                        person.getName() + " " + message);
+
+                            @Override
+                            public void onProgressUpdate(Integer... params) {
+                                result.setMessage(message + params[0] + "/" + oldPeople.size());
                             }
-                            result.setMessage(message + counter + "/" + oldPeople.size());
-                        }
-                        showLogCat();
-                        result.cancel();
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                super.onPostExecute(aVoid);
+                                showLogCat();
+                                result.cancel();
+                            }
+                        };
+                        sendInBackground.execute();
                     }
                 });
                 theAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

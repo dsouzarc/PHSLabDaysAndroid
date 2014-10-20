@@ -52,8 +52,9 @@ public class SendMessageActivity extends Activity {
     private Context theC;
     private String email;
 
-    private SendGrid theSendGrid;
     private boolean isFinishedUpdating = false;
+
+    private String sendGridUsername, sendGridPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,10 +66,8 @@ public class SendMessageActivity extends Activity {
         editor = thePrefs.edit();
         email = thePrefs.getString("email", "");
 
-        final String sendgridUsername = getValue(Variables.SG_USERNAME);
-        final String sendgridPassword = getValue(Variables.SG_PASSWORD);
-
-        this.theSendGrid = new SendGrid(sendgridUsername, sendgridPassword);
+        this.sendGridUsername = getValue(Variables.SG_USERNAME);
+        this.sendGridPassword = getValue(Variables.SG_PASSWORD);
 
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);
@@ -147,6 +146,7 @@ public class SendMessageActivity extends Activity {
             messages.add("Sending welcome messaes to " + newPeople.size() + " new people");
             while(newPeople.size() > 0) {
                 final Person person = newPeople.removeFirst();
+                final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
                 theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                 theSendGrid.setFrom("dsouzarc@gmail.com");
                 theSendGrid.setSubject("Welcome to PHS Lab Days");
@@ -213,6 +213,7 @@ public class SendMessageActivity extends Activity {
             for(Integer key : keySet) {
                 final Person person = oldPeople.get(key);
                 if(person.shouldGetMessage()) {
+                    final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
                     theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                     theSendGrid.setFrom("dsouzarc@gmail.com");
                     theSendGrid.setSubject(person.getGreeting());
@@ -558,6 +559,7 @@ public class SendMessageActivity extends Activity {
 
                                 for(Integer key : keySet) {
                                     final Person person = oldPeople.get(key);
+                                    final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
                                     theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                                     theSendGrid.setFrom("dsouzarc@gmail.com");
                                     theSendGrid.setSubject(subject);

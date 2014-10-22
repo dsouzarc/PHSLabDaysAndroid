@@ -31,9 +31,6 @@ import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
@@ -412,40 +409,8 @@ public class SendMessageActivity extends Activity {
 
     /** Updates global hashmap with previously stored people */
     private void updateOldPeople() {
-        try {
-            final InputStream inputStream = theC.openFileInput(Variables.OLD_PEOPLE_TEXT_FILE);
-
-            if(inputStream != null) {
-                final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                final StringBuilder stringBuilder = new StringBuilder();
-
-                String receiveString = "";
-                while ((receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append(receiveString);
-                }
-                inputStream.close();
-
-                final JSONObject theObj = new JSONObject(stringBuilder.toString());
-                final JSONArray peopleArray = theObj.getJSONArray("people");
-                for (int i = 0; i < peopleArray.length(); i++) {
-                    try {
-                        final Person tP = Person.getPerson(peopleArray.getJSONObject(i));
-                        oldPeople.put(tP.hashCode(), tP);
-                    }
-                    catch (Exception e) {
-                        log("Problem from txt: " + peopleArray.getJSONObject(i).toString());
-                        makeToast("Problem: " + peopleArray.getJSONObject(i).toString());
-                        messages.add("Problem from txt file " + peopleArray.getJSONObject(i).toString());
-                    }
-                }
-            }
-        }
-        catch (Exception e) {
-            log("Error updating from textfile");
-            makeToast("Problem updating textfile");
-            messages.add("Problem from txt file");
-        }
+        final PeopleDataBase theDB = new PeopleDataBase(theC);
+        oldPeople.putAll(theDB.getAllPeople());
     }
 
     private static String formatNumber(String text) {

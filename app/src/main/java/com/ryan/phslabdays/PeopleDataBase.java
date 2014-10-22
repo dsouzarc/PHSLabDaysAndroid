@@ -1,16 +1,14 @@
 package com.ryan.phslabdays;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-
 import android.content.ContentValues;
-import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class PeopleDataBase extends SQLiteOpenHelper {
 
@@ -87,7 +85,35 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         return values;
     }
 
-    public List<Person> getAllPeople() {
+    public HashMap<Integer, Person> getAllPeople() {
+        final HashMap<Integer, Person> allPeople = new HashMap<Integer, Person>();
+        final String query = "SELECT * FROM " + TABLE_NAME;
+        final SQLiteDatabase db = this.getWritableDatabase();
+        final Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                final String name = cursor.getString(0);
+                final String phoneNumber = cursor.getString(1);
+                final String carrier = cursor.getString(2);
+                final boolean everydayNotifications = cursor.getString(3).contains("true");
+                final String science = cursor.getString(4);
+                final char[] scienceDays = toCharArray(cursor.getString(5).split(","));
+                final String misc = cursor.getString(6);
+                final char[] miscDays = toCharArray(cursor.getString(7).split(","));
+
+                final Person person = new Person(name, phoneNumber, carrier,
+                        new Science(science, scienceDays), new Science(misc, miscDays),
+                        everydayNotifications);
+
+                allPeople.put(person.hashCode(), person);
+            } while(cursor.moveToNext());
+        }
+
+        return allPeople;
+    }
+
+    public List<Person> getAllPeopleList() {
         final List<Person> allPeople = new ArrayList<Person>();
 
         final String query = "SELECT * FROM " + TABLE_NAME;

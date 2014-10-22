@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import android.content.ContentValues;
+import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -38,7 +39,7 @@ public class PeopleDataBase extends SQLiteOpenHelper {
                 PERSON_NAME + " TEXT," +
                 PERSON_PHONE + " TEXT," +
                 PERSON_CARRIER + " TEXT," +
-                PERSON_NOTIFICATIONS_EVERYDAY + " BOOLEAN," +
+                PERSON_NOTIFICATIONS_EVERYDAY + " TEXT," +
                 PERSON_SCIENCE + " TEXT," +
                 PERSON_SCIENCE_DAYS + " TEXT," +
                 PERSON_MISC + " TEXT," +
@@ -52,7 +53,76 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    
+    public void addPerson(final Person person) {
+        final SQLiteDatabase theDB = this.getWritableDatabase();
+
+        final ContentValues values = new ContentValues();
+
+        values.put(PERSON_NAME, person.getName());
+        values.put(PERSON_PHONE, person.getPhoneNumber());
+        values.put(PERSON_CARRIER, person.getCarrier());
+        values.put(PERSON_NOTIFICATIONS_EVERYDAY, person.isEveryday());
+
+        char[] days = person.getScience().getLabDays();
+        String daysString = "";
+
+        for(char day : days) {
+            daysString += day + "<";
+        }
+        values.put(PERSON_SCIENCE, person.getScience().getScienceName());
+        values.put(PERSON_SCIENCE_DAYS, daysString);
+
+        days = person.getMisc().getLabDays();
+        daysString = "";
+
+        for(char day : days) {
+            daysString += day + "<";
+        }
+        values.put(PERSON_MISC, person.getMisc().getScienceName());
+        values.put(PERSON_MISC_DAYS, daysString);
+        theDB.insert(TABLE_NAME, null, values);
+    }
+
+    public List<Person> getAllPeople() {
+        final List<Person> allPeople = new ArrayList<Person>();
+
+        final String query = "SELECT * FROM " + TABLE_NAME;
+        final SQLiteDatabase db = this.getWritableDatabase();
+        final Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                final String name = cursor.getString(0);
+                final String phoneNumber = cursor.getString(1);
+                final String carrier = cursor.getString(2);
+                final boolean everydayNotifications = cursor.getString(3).contains("true");
+                final String science = cursor.getString(4);
+                final char[] scienceDays = toCharArray(cursor.getString(5).split(","));
+                final String misc = cursor.getString(6);
+                final char[] miscDays = toCharArray(cursor.getString(7).split(","));
+
+                allPeople.add(new Person(name, phoneNumber, carrier,
+                        new Science(science, scienceDays), new Science(misc, miscDays),
+                        everydayNotifications));
+            } while(cursor.moveToNext());
+        }
+
+        return allPeople;
+    }
+
+    private static char[] toCharArray(final String[] values) {
+        final char[] chars = new char[values.length];
+
+        for(int i = 0; i < values.length; i++) {
+            if(values[i].length() == 0) {
+                chars[i] = 'Z';
+            }
+            else {
+                chars[i] = values[i].charAt(0);
+            }
+        }
+        return chars;
+    }
 
 
 

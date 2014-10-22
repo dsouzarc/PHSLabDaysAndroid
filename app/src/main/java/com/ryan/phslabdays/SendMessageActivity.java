@@ -390,9 +390,10 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onPostExecute(final LinkedList<Person> results) {
             makeToast("Got all results from online");
-            final PeopleDataBase db = new PeopleDataBase(theC);
 
             //If person isn't in database, is new person, add it to DB and list
+            /*final PeopleDataBase db = new PeopleDataBase(theC);
+            log("NEW BEFORE: " + oldPeople.size());
             for(Person result : results) {
                 if(!oldPeople.containsKey(result.hashCode())) {
                     newPeople.add(result);
@@ -403,6 +404,12 @@ public class SendMessageActivity extends Activity {
             }
             makeToast(newPeople.size() + " New People");
             messages.add("New People: " + newPeople.size());
+            log("OLD PEOPLE AFTER: " + oldPeople.size());*/
+
+            for(Person person : results) {
+                oldPeople.put(person.hashCode(), person);
+            }
+
             isFinishedUpdating = true;
         }
     }
@@ -410,10 +417,8 @@ public class SendMessageActivity extends Activity {
     /** Updates global hashmap with previously stored people */
     private void updateOldPeople() {
         final PeopleDataBase theDB = new PeopleDataBase(theC);
-        log("BEFORE: " + oldPeople.size());
-        theDB.addAllPeople(oldPeople);
+        //theDB.addAllPeople(oldPeople);
         //oldPeople.putAll(theDB.getAllPeople());
-        log("AFTER: " + oldPeople.size());
     }
 
     private static String formatNumber(String text) {

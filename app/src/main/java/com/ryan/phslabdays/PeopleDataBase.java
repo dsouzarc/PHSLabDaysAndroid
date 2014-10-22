@@ -92,6 +92,7 @@ public class PeopleDataBase extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()) {
             do {
+                Variables.log("Getting people");
                 final String name = cursor.getString(0);
                 final String phoneNumber = cursor.getString(1);
                 final String carrier = cursor.getString(2);

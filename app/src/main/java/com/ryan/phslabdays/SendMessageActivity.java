@@ -89,10 +89,6 @@ public class SendMessageActivity extends Activity {
                     return;
                 }
 
-                savePeople();
-                makeToast("Saved people in map to textfile: " + oldPeople.size());
-                messages.add("Saved: " + oldPeople.size() + " people to textfile");
-
                 Person.message = greeting.getText().toString();
                 Person.letterDay = letterDay.getSelectedItem().toString().charAt(0);
                 Person.numSchoolDaysOver = daysOver.getValue();
@@ -140,7 +136,7 @@ public class SendMessageActivity extends Activity {
         @Override
         public Void doInBackground(Void... params) {
             publishProgress(0);
-            messages.add("Sending welcome messaes to " + newPeople.size() + " new people");
+            messages.add("Sending welcome messages to " + newPeople.size() + " new people");
             while(newPeople.size() > 0) {
                 final Person person = newPeople.removeFirst();
                 final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
@@ -305,13 +301,9 @@ public class SendMessageActivity extends Activity {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
                     try {
-                        String result = "";
-
                         for(String key : allValues.getTags()) {
-                            result += allValues.getValue(key);
+                            log(key + "        " + allValues.getValue(key));
                         }
-
-                        log(result);
 
                         final String name = allValues.getValue("yourname") == null
                                 ? "" : allValues.getValue("yourname");
@@ -321,7 +313,8 @@ public class SendMessageActivity extends Activity {
 
                         final String carrier = assignCarrier(allValues.getValue("yourcarrier"));
                         final boolean everyday = allValues
-                                .getValue("whenwouldyouliketogettextnotifications").contains("Every");
+                                .getValue("whenwouldyouliketogettextnotifications")
+                                .contains("Every");
 
                         final String science = allValues.getValue("science");
                         final char[] sciencelabdays =
@@ -334,8 +327,6 @@ public class SendMessageActivity extends Activity {
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
                                 misclabdays), everyday);
-                        log("Person: " + person.toString());
-
                         onlinePeople.add(person);
                     }
                     catch (Exception e) {
@@ -371,39 +362,17 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onPostExecute(final LinkedList<Person> results) {
             makeToast("Got all results from online");
+            final PeopleDataBase db = new PeopleDataBase(theC);
             for(Person result : results) {
                 if(!oldPeople.containsKey(result.hashCode())) {
                     newPeople.add(result);
+                    db.addPerson(result);
                     oldPeople.put(result.hashCode(), result);
                 }
             }
             makeToast(newPeople.size() + " New People");
             messages.add("New People: " + newPeople.size());
             isFinishedUpdating = true;
-        }
-    }
-
-    /** Saves the people stored in hashmap to a textfile*/
-    private void savePeople() {
-        final JSONObject allPeople = new JSONObject();
-        try {
-            final JSONArray info = new JSONArray();
-            final Set<Integer> peopleKey = oldPeople.keySet();
-            for (Integer key : peopleKey) {
-                info.put(oldPeople.get(key).getJSON());
-            }
-            allPeople.put("people", info);
-
-            final OutputStreamWriter outputStreamWriter =
-                    new OutputStreamWriter(theC.openFileOutput(Variables.OLD_PEOPLE_TEXT_FILE,
-                            theC.MODE_PRIVATE));
-            outputStreamWriter.write(allPeople.toString());
-            outputStreamWriter.close();
-            log("Saved ");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            log("error saving ");
         }
     }
 

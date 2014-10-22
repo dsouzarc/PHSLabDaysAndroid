@@ -55,7 +55,10 @@ public class PeopleDataBase extends SQLiteOpenHelper {
 
     public void addPerson(final Person person) {
         final SQLiteDatabase theDB = this.getWritableDatabase();
+        theDB.insert(TABLE_NAME, null, personToContentValues(person));
+    }
 
+    private ContentValues personToContentValues(final Person person) {
         final ContentValues values = new ContentValues();
 
         values.put(PERSON_NAME, person.getName());
@@ -80,7 +83,8 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         }
         values.put(PERSON_MISC, person.getMisc().getScienceName());
         values.put(PERSON_MISC_DAYS, daysString);
-        theDB.insert(TABLE_NAME, null, values);
+
+        return values;
     }
 
     public List<Person> getAllPeople() {
@@ -110,6 +114,16 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         return allPeople;
     }
 
+    public void updatePerson(final Person oldPerson, final Person newPerson) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        final ContentValues values = personToContentValues(newPerson);
+
+        db.update(TABLE_NAME, values, PERSON_PHONE + " = ?",
+                new String[]{oldPerson.getPhoneNumber()});
+    }
+
+    
+
     private static char[] toCharArray(final String[] values) {
         final char[] chars = new char[values.length];
 
@@ -123,9 +137,4 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         }
         return chars;
     }
-
-
-
-
-
 }

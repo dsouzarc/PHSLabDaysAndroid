@@ -88,7 +88,7 @@ public class PeopleDataBase extends SQLiteOpenHelper {
     public HashMap<Integer, Person> getAllPeople() {
         final HashMap<Integer, Person> allPeople = new HashMap<Integer, Person>();
         final String query = "SELECT * FROM " + TABLE_NAME;
-        final SQLiteDatabase db = this.getWritableDatabase();
+        final SQLiteDatabase db = this.getReadableDatabase();
         final Cursor cursor = db.rawQuery(query, null);
 
         if(cursor.moveToFirst()) {
@@ -117,7 +117,7 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         final List<Person> allPeople = new ArrayList<Person>();
 
         final String query = "SELECT * FROM " + TABLE_NAME;
-        final SQLiteDatabase db = this.getWritableDatabase();
+        final SQLiteDatabase db = this.getReadableDatabase();
         final Cursor cursor = db.rawQuery(query, null);
 
         if(cursor.moveToFirst()) {
@@ -167,5 +167,10 @@ public class PeopleDataBase extends SQLiteOpenHelper {
             }
         }
         return chars;
+    }
+
+    public void deleteAllPeople() {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, null, null);
     }
 }

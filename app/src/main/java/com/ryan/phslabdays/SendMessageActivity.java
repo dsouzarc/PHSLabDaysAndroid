@@ -63,7 +63,7 @@ public class SendMessageActivity extends Activity {
         editor = thePrefs.edit();
         email = thePrefs.getString("email", "");
         final com.ryan.phslabdays.PeopleDataBase people = new PeopleDataBase(theC);
-        people.dele
+        people.deleteAllPeople();
 
         this.sendGridUsername = getValue(Variables.SG_USERNAME);
         this.sendGridPassword = getValue(Variables.SG_PASSWORD);

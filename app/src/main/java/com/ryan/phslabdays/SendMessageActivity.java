@@ -209,6 +209,7 @@ public class SendMessageActivity extends Activity {
 
         @Override
         public Void doInBackground(final Void... params) {
+            publishProgress(0);
             final Set<Integer> keySet = oldPeople.keySet();
             for(Integer key : keySet) {
                 final Person person = oldPeople.get(key);

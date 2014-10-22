@@ -114,15 +114,20 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         return allPeople;
     }
 
-    public void updatePerson(final Person oldPerson, final Person newPerson) {
+    public void updatePerson(final String oldPersonPhoneNumber, final Person newPerson) {
         final SQLiteDatabase db = this.getWritableDatabase();
         final ContentValues values = personToContentValues(newPerson);
 
         db.update(TABLE_NAME, values, PERSON_PHONE + " = ?",
-                new String[]{oldPerson.getPhoneNumber()});
+                new String[]{oldPersonPhoneNumber});
     }
 
-    
+    public void deletePerson(final String phoneNumber) {
+        final SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_NAME, PERSON_PHONE + " = ?",
+                new String[] {phoneNumber});
+        db.close();
+    }
 
     private static char[] toCharArray(final String[] values) {
         final char[] chars = new char[values.length];

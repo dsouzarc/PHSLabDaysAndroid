@@ -62,6 +62,8 @@ public class SendMessageActivity extends Activity {
         thePrefs = this.getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
         editor = thePrefs.edit();
         email = thePrefs.getString("email", "");
+        final com.ryan.phslabdays.PeopleDataBase people = new PeopleDataBase(theC);
+        people.dele
 
         this.sendGridUsername = getValue(Variables.SG_USERNAME);
         this.sendGridPassword = getValue(Variables.SG_PASSWORD);
@@ -131,6 +133,8 @@ public class SendMessageActivity extends Activity {
         private final AlertDialog.Builder progressAlert;
         private AlertDialog theAlert;
 
+        private Person currentPerson;
+
         public SendWelcomeMessage() {
             this.progressAlert = new AlertDialog.Builder(SendMessageActivity.this);
             this.progressAlert.setTitle("Sending Welcome Message: " + newPeople.size());
@@ -142,28 +146,30 @@ public class SendMessageActivity extends Activity {
             publishProgress(0);
             messages.add("Sending welcome messages to " + newPeople.size() + " new people");
             while(newPeople.size() > 0) {
-                final Person person = newPeople.removeFirst();
+                this.currentPerson = newPeople.removeFirst();
                 final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
-                theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
+                theSendGrid.addTo(this.currentPerson.getPhoneNumber() +
+                        this.currentPerson.getCarrier());
                 theSendGrid.setFrom("dsouzarc@gmail.com");
                 theSendGrid.setSubject("Welcome to PHS Lab Days");
 
                 String welcomeText = "If you have any questions, please contact " +
                         "Ryan D'souza @ dsouzarc@gmail.com or (609) 915 4930.";
 
-                if(!person.shouldGetMessage()) {
+                if(!this.currentPerson.shouldGetMessage()) {
                     welcomeText += Person.getLetterDay();
                 }
                 publishProgress(1);
                 theSendGrid.setText(welcomeText);
                 try {
-                    final String status = theSendGrid.send();
-                    messages.add("Sent Welcome! " + person.getName() + " " +  person.getPhoneNumber() +
+                    final String status = ""; //theSendGrid.send();
+                    messages.add("Sent Welcome! " + this.currentPerson.getName() + " " +
+                            this.currentPerson.getPhoneNumber() +
                             " " + status);
                 }
                 catch (Exception e) {
                     messages.add("Error sending welcome " + e.toString() +
-                            " " + person.getPhoneNumber() + " " + person.getName());
+                            " " + this.currentPerson.getPhoneNumber() + " " + this.currentPerson.getName());
                 }
             }
             return null;
@@ -176,9 +182,12 @@ public class SendMessageActivity extends Activity {
                 this.theAlert.show();
             }
             else {
+                if(this.currentPerson == null) {
+                    return;
+                }
                 this.theAlert.setMessage("Sending welcome to: " +
-                        newPeople.getFirst().getName() + " " +
-                        newPeople.getFirst().getPhoneNumber());
+                        this.currentPerson.getName() + " " +
+                        this.currentPerson.getPhoneNumber());
             }
         }
 
@@ -217,8 +226,13 @@ public class SendMessageActivity extends Activity {
                     theSendGrid.setFrom("dsouzarc@gmail.com");
                     theSendGrid.setSubject(person.getGreeting());
                     theSendGrid.setText(person.getMessage());
+
+                    if(person.getName().contains("Charl")) {
+                        log("DAILY HERE: " + person.toString());
+                    }
+
                     try {
-                        final String status = theSendGrid.send();
+                        final String status = ""; //theSendGrid.send();
                         publishProgress(key);
                         messages.add("Daily: " + status + person.getName() + " " + person.getMessage());
                     }
@@ -282,6 +296,7 @@ public class SendMessageActivity extends Activity {
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
         @Override
         public LinkedList<Person> doInBackground(Void... params) {
+            //Add all previously saved people to global HashMap
             updateOldPeople();
             if(oldPeople.size() < 5) {
                 publishProgress(1);
@@ -290,9 +305,9 @@ public class SendMessageActivity extends Activity {
                 publishProgress(2);
             }
 
+            final LinkedList<Person> onlinePeople = new LinkedList<Person>();
             final SpreadsheetService service =
                     new SpreadsheetService("MySpreadsheetIntegration-v1");
-            final LinkedList<Person> onlinePeople = new LinkedList<Person>();
 
             try {
                 final String gmailUsername = getValue(Variables.GM_USERNAME);
@@ -311,9 +326,9 @@ public class SendMessageActivity extends Activity {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
                     try {
-                        for(String key : allValues.getTags()) {
+                        /*for(String key : allValues.getTags()) {
                             log(key + "        " + allValues.getValue(key));
-                        }
+                        }*/
 
                         final String name = allValues.getValue("yourname") == null
                                 ? "" : allValues.getValue("yourname");
@@ -337,6 +352,11 @@ public class SendMessageActivity extends Activity {
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
                                 misclabdays), everyday);
+
+                        if(name.contains("Charl")) {
+                            log("HERE: " + person.toString());
+                        }
+
                         onlinePeople.add(person);
                     }
                     catch (Exception e) {
@@ -373,9 +393,12 @@ public class SendMessageActivity extends Activity {
         public void onPostExecute(final LinkedList<Person> results) {
             makeToast("Got all results from online");
             final PeopleDataBase db = new PeopleDataBase(theC);
+
+            //If person isn't in database, is new person, add it to DB and list
             for(Person result : results) {
                 if(!oldPeople.containsKey(result.hashCode())) {
                     newPeople.add(result);
+                    log("Not there: " + result.toString());
                     db.addPerson(result);
                     oldPeople.put(result.hashCode(), result);
                 }
@@ -389,7 +412,9 @@ public class SendMessageActivity extends Activity {
     /** Updates global hashmap with previously stored people */
     private void updateOldPeople() {
         final PeopleDataBase theDB = new PeopleDataBase(theC);
+        log("BEFORE: " + oldPeople.size());
         oldPeople.putAll(theDB.getAllPeople());
+        log("AFTER: " + oldPeople.size());
     }
 
     private static String formatNumber(String text) {
@@ -513,14 +538,15 @@ public class SendMessageActivity extends Activity {
 
                                 for(Integer key : keySet) {
                                     final Person person = oldPeople.get(key);
-                                    final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
+                                    final SendGrid theSendGrid = new SendGrid(sendGridUsername,
+                                            sendGridPassword);
                                     theSendGrid.addTo(person.getPhoneNumber() + person.getCarrier());
                                     theSendGrid.setFrom("dsouzarc@gmail.com");
                                     theSendGrid.setSubject(subject);
                                     theSendGrid.setText(message);
 
                                     try {
-                                        final String status = theSendGrid.send();
+                                        final String status = "";//theSendGrid.send();
                                         messages.add("Special text: " + status + person.getName() +
                                                 " " + message);
                                     }

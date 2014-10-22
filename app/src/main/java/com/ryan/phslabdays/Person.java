@@ -196,7 +196,7 @@ public class Person {
 
     @Override
     public int hashCode() {
-        return (this.name + this.carrier).hashCode();
+        return (this.phoneNumber + this.carrier).hashCode();
     }
 
     public String getName() {

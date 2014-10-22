@@ -68,12 +68,15 @@ public class SendMessageActivity extends Activity {
 
         final EditText greeting = (EditText) findViewById(R.id.greetingET);
         final Spinner letterDay = (Spinner) findViewById(R.id.letterDaySpinner);
-        ((TextView) findViewById(R.id.letterDayTV)).setText("Letter Day (" +
-                thePrefs.getString("letter", "") + ")");
         final NumberPicker daysOver = (NumberPicker) findViewById(R.id.daysOverPicker);
         final EditText noSchool = (EditText) findViewById(R.id.noSchoolET);
         final Button sendButton = (Button) findViewById(R.id.sendButton);
 
+        //Update TextView with yesterday's letter day
+        ((TextView) findViewById(R.id.letterDayTV)).setText("Letter Day (" +
+                thePrefs.getString("letter", "") + ")");
+
+        //People from Google SpreadSheet
         new GetPeopleOnLine().execute();
 
         greeting.setText(thePrefs.getString("greeting", ""));
@@ -122,6 +125,7 @@ public class SendMessageActivity extends Activity {
         });
     }
 
+    /** Sends welcome messages to new people */
     private class SendWelcomeMessage extends AsyncTask<Void, Integer, Void> {
 
         private final AlertDialog.Builder progressAlert;
@@ -188,6 +192,7 @@ public class SendMessageActivity extends Activity {
         }
     }
 
+    /** Send the daily message to everyone */
     private class SendDailyMessage extends AsyncTask<Void, Integer, Void> {
 
         final AlertDialog.Builder theAlertB;
@@ -265,6 +270,11 @@ public class SendMessageActivity extends Activity {
         final TextView textView = new TextView(theC);
         textView.setText(message);
         textView.setTextColor(number % 2 == 0 ? Color.BLACK : Color.BLUE);
+
+        if(message.toLowerCase().contains("failure") || message.toLowerCase().contains("problem")) {
+            textView.setTextColor(Color.RED);
+        }
+
         textView.setPadding(16, 16, 16, 16);
         return textView;
     }

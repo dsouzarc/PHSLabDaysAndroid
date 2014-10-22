@@ -307,6 +307,14 @@ public class SendMessageActivity extends Activity {
                     final CustomElementCollection allValues = entry.getCustomElements();
 
                     try {
+                        String result = "";
+
+                        for(String key : allValues.getTags()) {
+                            result += allValues.getValue(key);
+                        }
+
+                        log(result);
+
                         final String name = allValues.getValue("yourname") == null
                                 ? "" : allValues.getValue("yourname");
 
@@ -327,8 +335,9 @@ public class SendMessageActivity extends Activity {
 
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
-                                misclabdays), everyday
-                        );
+                                misclabdays), everyday);
+                        log("Person: " + person.toString());
+
                         onlinePeople.add(person);
                     }
                     catch (Exception e) {

@@ -62,8 +62,6 @@ public class SendMessageActivity extends Activity {
         thePrefs = this.getSharedPreferences("com.ryan.phslabdays", Context.MODE_PRIVATE);
         editor = thePrefs.edit();
         email = thePrefs.getString("email", "");
-        final com.ryan.phslabdays.PeopleDataBase people = new PeopleDataBase(theC);
-        people.deleteAllPeople();
 
         this.sendGridUsername = getValue(Variables.SG_USERNAME);
         this.sendGridPassword = getValue(Variables.SG_PASSWORD);
@@ -413,7 +411,8 @@ public class SendMessageActivity extends Activity {
     private void updateOldPeople() {
         final PeopleDataBase theDB = new PeopleDataBase(theC);
         log("BEFORE: " + oldPeople.size());
-        oldPeople.putAll(theDB.getAllPeople());
+        theDB.addAllPeople(oldPeople);
+        //oldPeople.putAll(theDB.getAllPeople());
         log("AFTER: " + oldPeople.size());
     }
 

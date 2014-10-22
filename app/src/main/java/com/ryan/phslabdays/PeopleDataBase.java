@@ -85,8 +85,7 @@ public class PeopleDataBase extends SQLiteOpenHelper {
         return values;
     }
 
-    public HashMap<Integer, Person> getAllPeople() {
-        final HashMap<Integer, Person> allPeople = new HashMap<Integer, Person>();
+    public void addAllPeople(final HashMap<Integer, Person> allPeople) {
         final String query = "SELECT * FROM " + TABLE_NAME;
         final SQLiteDatabase db = this.getReadableDatabase();
         final Cursor cursor = db.rawQuery(query, null);
@@ -109,11 +108,9 @@ public class PeopleDataBase extends SQLiteOpenHelper {
                 allPeople.put(person.hashCode(), person);
             } while(cursor.moveToNext());
         }
-
-        return allPeople;
     }
 
-    public List<Person> getAllPeopleList() {
+    public List<Person> getAllPeople() {
         final List<Person> allPeople = new ArrayList<Person>();
 
         final String query = "SELECT * FROM " + TABLE_NAME;

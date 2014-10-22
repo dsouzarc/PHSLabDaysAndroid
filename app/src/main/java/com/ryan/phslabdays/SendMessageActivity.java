@@ -160,7 +160,7 @@ public class SendMessageActivity extends Activity {
                 publishProgress(1);
                 theSendGrid.setText(welcomeText);
                 try {
-                    final String status = ""; //theSendGrid.send();
+                    final String status = theSendGrid.send();
                     messages.add("Sent Welcome! " + this.currentPerson.getName() + " " +
                             this.currentPerson.getPhoneNumber() +
                             " " + status);
@@ -225,12 +225,8 @@ public class SendMessageActivity extends Activity {
                     theSendGrid.setSubject(person.getGreeting());
                     theSendGrid.setText(person.getMessage());
 
-                    if(person.getName().contains("Charl")) {
-                        log("DAILY HERE: " + person.toString());
-                    }
-
                     try {
-                        final String status = ""; //theSendGrid.send();
+                        final String status = theSendGrid.send();
                         publishProgress(key);
                         messages.add("Daily: " + status + person.getName() + " " + person.getMessage());
                     }
@@ -350,10 +346,6 @@ public class SendMessageActivity extends Activity {
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
                                 misclabdays), everyday);
-
-                        if(name.contains("Charl")) {
-                            log("HERE: " + person.toString());
-                        }
 
                         onlinePeople.add(person);
                     }
@@ -550,7 +542,7 @@ public class SendMessageActivity extends Activity {
                                     theSendGrid.setText(message);
 
                                     try {
-                                        final String status = "";//theSendGrid.send();
+                                        final String status = theSendGrid.send();
                                         messages.add("Special text: " + status + person.getName() +
                                                 " " + message);
                                     }

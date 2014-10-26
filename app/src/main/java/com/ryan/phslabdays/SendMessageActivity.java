@@ -397,7 +397,6 @@ public class SendMessageActivity extends Activity {
             makeToast(newPeople.size() + " New People");
             messages.add("New People: " + newPeople.size());
             log("OLD PEOPLE AFTER: " + oldPeople.size());*/
-            log("HERE");
 
             for(Person person : results) {
                 oldPeople.put(person.hashCode(), person);

@@ -160,7 +160,7 @@ public class SendMessageActivity extends Activity {
                 publishProgress(1);
                 theSendGrid.setText(welcomeText);
                 try {
-                    final String status = theSendGrid.send();
+                    final String status = "Cancel send"; //theSendGrid.send();
                     messages.add("Sent Welcome! " + this.currentPerson.getName() + " " +
                             this.currentPerson.getPhoneNumber() +
                             " " + status);
@@ -397,6 +397,7 @@ public class SendMessageActivity extends Activity {
             makeToast(newPeople.size() + " New People");
             messages.add("New People: " + newPeople.size());
             log("OLD PEOPLE AFTER: " + oldPeople.size());*/
+            log("HERE");
 
             for(Person person : results) {
                 oldPeople.put(person.hashCode(), person);
@@ -444,7 +445,8 @@ public class SendMessageActivity extends Activity {
         return answer;
     }
 
-    private static String assignCarrier(final String name) {
+    private static String assignCarrier(String name) {
+        name = name.toLowerCase();
         if (name.contains("verizon")) {
             return Variables.VERIZON;
         }

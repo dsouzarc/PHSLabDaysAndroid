@@ -28,10 +28,6 @@ import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -288,6 +284,7 @@ public class SendMessageActivity extends Activity {
     }
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
+
         @Override
         public LinkedList<Person> doInBackground(Void... params) {
             //Add all previously saved people to global HashMap
@@ -346,6 +343,22 @@ public class SendMessageActivity extends Activity {
                         final Person person = new Person(name, phoneNumber, carrier,
                                 new Science(science, sciencelabdays), new Science(miscDay,
                                 misclabdays), everyday);
+
+                        /*if(name.contains("Taran")) {
+                            log("TARAN: " + person.toString());
+                            final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
+                            theSendGrid.addTo("6099154930@vtext.com");
+                            theSendGrid.setFrom("dsouzarc@gmail.com");
+                            theSendGrid.setSubject("Taran, did you get this");
+                            theSendGrid.setText("Testing " + person.getPhoneNumber() + person.getCarrier());
+                            try {
+                                final String status = theSendGrid.send();
+                                log(status + person.toString());
+                            }
+                            catch (Exception e) {
+                                log("Errr");
+                            }
+                        }*/
 
                         onlinePeople.add(person);
                     }
@@ -444,7 +457,7 @@ public class SendMessageActivity extends Activity {
         return answer;
     }
 
-    private static String assignCarrier(String name) {
+    private String assignCarrier(String name) {
         name = name.toLowerCase();
         if (name.contains("verizon")) {
             return Variables.VERIZON;
@@ -467,7 +480,7 @@ public class SendMessageActivity extends Activity {
         if (name.contains("Nextel")) {
             return Variables.NEXTEL;
         }
-        System.out.println("ERROR: " + name);
+        log("ERROR: " + name);
         return Variables.VERIZON;
     }
 

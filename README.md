@@ -1,3 +1,9 @@
 Written by Ryan D'souza
 
-Android application that gets everyone's phone number and information from a Google Drive Sheet that contains the results of a Google Form, and sends those people the appropriate messages. 
+Princeton High School (Princeton, NJ) Lab Days Android Application
+
+Sends notifications to students on their lab days. 
+
+Android application accesses a Google Sheets document that contains a list of all the students, their phone numbers, the days they have lab, and their lab period.
+
+The application then sends text messages to those students who have lab.

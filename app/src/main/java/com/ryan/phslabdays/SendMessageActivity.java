@@ -346,8 +346,8 @@ public class SendMessageActivity extends Activity {
                                 new Science(science, sciencelabdays), new Science(miscDay,
                                 misclabdays), everyday);
 
-                        /*if(name.contains("Taran")) {
-                            log("TARAN: " + person.toString());
+                        /*if(name.contains("Rishab")) {
+                            log("Rishab: " + person.toString());
                             final SendGrid theSendGrid = new SendGrid(sendGridUsername, sendGridPassword);
                             theSendGrid.addTo("6099154930@vtext.com");
                             theSendGrid.setFrom("dsouzarc@gmail.com");

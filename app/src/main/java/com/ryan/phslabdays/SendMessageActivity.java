@@ -198,8 +198,8 @@ public class SendMessageActivity extends Activity {
     /** Send the daily message to everyone */
     private class SendDailyMessage extends AsyncTask<Void, Integer, Void> {
 
-        final AlertDialog.Builder theAlertB;
-        final AlertDialog theAlert;
+        private final AlertDialog.Builder theAlertB;
+        private final AlertDialog theAlert;
 
         public SendDailyMessage() {
             this.theAlertB = new AlertDialog.Builder(SendMessageActivity.this);
@@ -285,6 +285,8 @@ public class SendMessageActivity extends Activity {
 
     private class GetPeopleOnLine extends AsyncTask<Void, Integer, LinkedList<Person>> {
 
+        private int numPeopleGoogleDoc = 0;
+
         @Override
         public LinkedList<Person> doInBackground(Void... params) {
             //Add all previously saved people to global HashMap
@@ -361,6 +363,7 @@ public class SendMessageActivity extends Activity {
                         }*/
 
                         onlinePeople.add(person);
+                        numPeopleGoogleDoc++;
                     }
                     catch (Exception e) {
                         log("HERE: " + e.toString());
@@ -384,7 +387,7 @@ public class SendMessageActivity extends Activity {
                 makeToast("Got Form Results from online");
             }
             if(progress[0] == 1) {
-                makeToast("Error reading saved people");
+                //makeToast("Error reading saved people");
             }
             if(progress[0] == 2) {
                 makeToast("Read from text file: " + oldPeople.size() + " people");
@@ -394,7 +397,7 @@ public class SendMessageActivity extends Activity {
 
         @Override
         public void onPostExecute(final LinkedList<Person> results) {
-            makeToast("Got all results from online");
+            makeToast("Got all results from online. #" + numPeopleGoogleDoc + " people");
 
             //If person isn't in database, is new person, add it to DB and list
             /*final PeopleDataBase db = new PeopleDataBase(theC);
@@ -414,7 +417,7 @@ public class SendMessageActivity extends Activity {
             for(Person person : results) {
                 oldPeople.put(person.hashCode(), person);
             }
-
+            makeToast("Non-duplicates = " + oldPeople.size());
             isFinishedUpdating = true;
         }
     }

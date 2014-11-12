@@ -6,12 +6,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import java.util.GregorianCalendar;
+import java.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.app.AlarmManager;
+import java.util.Calendar;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +29,7 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.content.Intent;
 import com.github.sendgrid.SendGrid;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.spreadsheet.CustomElementCollection;
@@ -119,6 +128,18 @@ public class SendMessageActivity extends Activity {
                 sendConfirm.show();
             }
         });
+
+        final GregorianCalendar today = new GregorianCalendar();
+        today.set(Calendar.HOUR_OF_DAY, 6);
+        today.set(Calendar.MINUTE, 25);
+
+        //For sending notification every morning
+        final Intent sendMessageIntent = new Intent(this, SendMessageReceiver.class);
+
+        final AlarmManager sendAlarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        sendAlarm.set(AlarmManager.RTC_WAKEUP, today.getTimeInMillis(), PendingIntent.getBroadcast(this , 1,
+                sendMessageIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
     }
 
     /** Sends welcome messages to new people */

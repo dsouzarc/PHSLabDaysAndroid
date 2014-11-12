@@ -1,6 +1,8 @@
 package com.ryan.phslabdays;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,48 +16,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.app.AlarmManager;
-import java.util.Calendar;
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.content.Intent;
-import com.github.sendgrid.SendGrid;
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.spreadsheet.CustomElementCollection;
-import com.google.gdata.data.spreadsheet.ListEntry;
-import com.google.gdata.data.spreadsheet.ListFeed;
-import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 public class LoginScreen extends Activity {
 
     private EditText passwordET, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
@@ -165,7 +128,7 @@ public class LoginScreen extends Activity {
             final Intent sendMessageIntent = new Intent(LoginScreen.this, SendMessageReceiver.class);
             final AlarmManager sendAlarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             sendAlarm.setRepeating(AlarmManager.RTC_WAKEUP, today.getTimeInMillis(),
-                    24 * 60 * 60 *1000, PendingIntent.getService(LoginScreen.this, 0,
+                    24 * 60 * 60 * 1000, PendingIntent.getService(LoginScreen.this, 0,
                             sendMessageIntent, 0));
         }
     }

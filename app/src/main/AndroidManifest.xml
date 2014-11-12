@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -29,5 +30,7 @@
             android:label="@string/title_activity_send_message"
             android:noHistory="true">
         </activity>
+
+        <receiver android:name=".SendMessageReceiver" />
     </application>
 </manifest>

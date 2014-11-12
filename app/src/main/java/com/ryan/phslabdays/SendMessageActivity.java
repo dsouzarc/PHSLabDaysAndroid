@@ -128,18 +128,6 @@ public class SendMessageActivity extends Activity {
                 sendConfirm.show();
             }
         });
-
-        final GregorianCalendar today = new GregorianCalendar();
-        today.set(Calendar.HOUR_OF_DAY, 6);
-        today.set(Calendar.MINUTE, 25);
-
-        //For sending notification every morning
-        final Intent sendMessageIntent = new Intent(this, SendMessageReceiver.class);
-
-        final AlarmManager sendAlarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        sendAlarm.set(AlarmManager.RTC_WAKEUP, today.getTimeInMillis(), PendingIntent.getBroadcast(this , 1,
-                sendMessageIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
     }
 
     /** Sends welcome messages to new people */

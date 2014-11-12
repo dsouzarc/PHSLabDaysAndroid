@@ -3,34 +3,39 @@
     package="com.ryan.phslabdays" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
-        <meta-data android:name="com.google.android.gms.version"
-                   android:value="@integer/google_play_services_version" />
         <activity
-            android:name=".LoginScreen"
+            android:name="com.ryan.phslabdays.LoginScreen"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".SendMessageActivity"
+            android:name="com.ryan.phslabdays.SendMessageActivity"
             android:label="@string/title_activity_send_message"
-            android:noHistory="true">
+            android:noHistory="true" >
         </activity>
 
-        <receiver android:name=".SendMessageReceiver" />
+        <receiver
+            android:name="com.ryan.phslabdays.SendMessageReceiver"
+            android:enabled="true"
+            android:exported="true" />
     </application>
+
 </manifest>

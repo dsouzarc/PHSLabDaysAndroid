@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 public class LoginScreen extends Activity {
 
     private EditText passwordET, sendgridUsername, sendgridPassword, gmailUsername, gmailPassword;
@@ -117,19 +116,43 @@ public class LoginScreen extends Activity {
             }
         });
 
-        final int dayOfWeek = (new GregorianCalendar().get(Calendar.DAY_OF_WEEK));
+        boolean endDate = false;
 
-        if(dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
-            final Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 6);
-            today.set(Calendar.MINUTE, 23);
+        final Calendar theCalendar = Calendar.getInstance();
+        int counter = 0;
+        while(!endDate) {
+            //Current day of week
+            final int dayOfWeek = theCalendar.get(Calendar.DAY_OF_WEEK);
 
-            //For sending notification every morning
-            final Intent sendMessageIntent = new Intent(LoginScreen.this, SendMessageReceiver.class);
-            final AlarmManager sendAlarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            sendAlarm.setRepeating(AlarmManager.RTC_WAKEUP, today.getTimeInMillis(),
-                    24 * 60 * 60 * 1000, PendingIntent.getService(LoginScreen.this, 0,
-                            sendMessageIntent, 0));
+            //If it's not Saturday or Sunday
+            if(dayOfWeek != Calendar.SATURDAY && dayOfWeek != Calendar.SUNDAY) {
+
+                //6:20 AM
+                theCalendar.set(Calendar.HOUR_OF_DAY, 6);
+                theCalendar.set(Calendar.MINUTE, 20);
+
+                final Intent sendMessageIntent = new Intent(LoginScreen.this, SendMessageReceiver.class);
+
+                //PendingIntent with ID of day of year
+                final PendingIntent pendingIntent = PendingIntent.getBroadcast(LoginScreen.this,
+                        theCalendar.get(Calendar.DAY_OF_YEAR), sendMessageIntent, 0);
+
+                //Set an alarm
+                final AlarmManager sendAlarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                sendAlarm.set(AlarmManager.RTC, theCalendar.getTimeInMillis(), pendingIntent);
+            }
+
+            if(theCalendar.get(Calendar.MONTH) == Calendar.JUNE &&
+                    theCalendar.get(Calendar.DAY_OF_MONTH) == 30) {
+                endDate = true;
+                makeToast("Finished updating alarms: " + counter);
+                log(theCalendar.toString());
+                break;
+            }
+
+            //Add a day
+            theCalendar.add(Calendar.DATE, 1);
+            counter++;
         }
     }
 

@@ -1,6 +1,6 @@
 Written by Ryan D'souza
 
-Princeton High School (Princeton, NJ) Lab Days Android Application
+Lab Days Android Application
 
 Sends notifications to students on their lab days. 
 
